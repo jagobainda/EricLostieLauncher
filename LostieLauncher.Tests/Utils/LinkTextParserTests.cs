@@ -7,11 +7,9 @@ public class LinkTextParserTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Parse_ReturnsEmpty_ForNullOrEmpty(string? text)
-    {
+    public void Parse_ReturnsEmpty_ForNullOrEmpty(string? text) =>
         // Act & Assert
         LinkTextParser.Parse(text).ShouldBeEmpty();
-    }
 
     [Fact]
     public void Parse_ReturnsSinglePlainSegment_WhenNoLinks()
@@ -91,11 +89,9 @@ public class LinkTextParserTests
     [InlineData("Guarda el archivo.txt en la carpeta")]          // TLD no conocido: no es link
     [InlineData("Escríbenos a soporte@example.com si falla")]    // email: no es link
     [InlineData("La versión v0.9.0 ya está disponible")]         // números con puntos: no es link
-    public void Parse_IgnoresNonLinks(string text)
-    {
+    public void Parse_IgnoresNonLinks(string text) =>
         // Act & Assert
         LinkTextParser.Parse(text).ShouldAllBe(s => !s.IsLink);
-    }
 
     [Fact]
     public void Parse_IgnoresHttpUrls()
