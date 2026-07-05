@@ -123,6 +123,10 @@ if ($Sign) {
     Write-Host "Registrando clave de tarjeta inteligente..." -ForegroundColor Yellow
     certutil -repairstore -user MY $CertThumbprint "C:\Users\Jagoba\keyinfo.inf"
     if ($LASTEXITCODE -ne 0) { Write-Error "certutil -repairstore falló."; exit 1 }
+
+    $vpkArgs += @(
+        "--signTemplate", "`"$SigntoolExe`" sign /sha1 $CertThumbprint /tr $TimestampUrl /td sha256 /fd sha256 {{file}}"
+    )
 }
 
 & vpk @vpkArgs
