@@ -10,6 +10,7 @@ public partial class MainViewModel : ObservableObject
     private readonly HomeViewModel _homeViewModel;
     private readonly GamesViewModel _gamesViewModel;
     private readonly LibraryViewModel _libraryViewModel;
+    private readonly FaqsViewModel _faqsViewModel;
     private readonly SettingsViewModel _settingsViewModel;
 
     [ObservableProperty]
@@ -19,21 +20,24 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsHomeActive))]
     [NotifyPropertyChangedFor(nameof(IsGamesActive))]
     [NotifyPropertyChangedFor(nameof(IsLibraryActive))]
+    [NotifyPropertyChangedFor(nameof(IsFaqsActive))]
     [NotifyPropertyChangedFor(nameof(IsSettingsActive))]
     public partial ObservableObject CurrentViewModel { get; set; } = null!;
 
     public bool IsHomeActive => CurrentViewModel is HomeViewModel;
     public bool IsGamesActive => CurrentViewModel is GamesViewModel;
     public bool IsLibraryActive => CurrentViewModel is LibraryViewModel;
+    public bool IsFaqsActive => CurrentViewModel is FaqsViewModel;
     public bool IsSettingsActive => CurrentViewModel is SettingsViewModel;
     public bool IsOfflineMode => _homeViewModel.IsOfflineMode;
 
-    public MainViewModel(GlobalViewModel globalViewModel, HomeViewModel homeViewModel, GamesViewModel gamesViewModel, LibraryViewModel libraryViewModel, SettingsViewModel settingsViewModel)
+    public MainViewModel(GlobalViewModel globalViewModel, HomeViewModel homeViewModel, GamesViewModel gamesViewModel, LibraryViewModel libraryViewModel, FaqsViewModel faqsViewModel, SettingsViewModel settingsViewModel)
     {
         _globalViewModel = globalViewModel;
         _homeViewModel = homeViewModel;
         _gamesViewModel = gamesViewModel;
         _libraryViewModel = libraryViewModel;
+        _faqsViewModel = faqsViewModel;
         _settingsViewModel = settingsViewModel;
         CurrentViewModel = _homeViewModel;
         CurrentTitle = _settingsViewModel.Strings.TitleHome;
@@ -77,6 +81,7 @@ public partial class MainViewModel : ObservableObject
         HomeViewModel => _settingsViewModel.Strings.TitleHome,
         GamesViewModel => _settingsViewModel.Strings.TitleGames,
         LibraryViewModel => _settingsViewModel.Strings.TitleLibrary,
+        FaqsViewModel => _settingsViewModel.Strings.TitleFaqs,
         _ => _settingsViewModel.Strings.TitleSettings
     };
 
@@ -102,6 +107,14 @@ public partial class MainViewModel : ObservableObject
         Logs.DebugLogManager("Navigating to Library.");
         CurrentViewModel = _libraryViewModel;
         CurrentTitle = _settingsViewModel.Strings.TitleLibrary;
+    }
+
+    [RelayCommand]
+    private void NavigateToFaqs()
+    {
+        Logs.DebugLogManager("Navigating to FAQs.");
+        CurrentViewModel = _faqsViewModel;
+        CurrentTitle = _settingsViewModel.Strings.TitleFaqs;
     }
 
     [RelayCommand]
