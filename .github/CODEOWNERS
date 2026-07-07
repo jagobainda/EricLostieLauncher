@@ -1,0 +1,8 @@
+# GitHub solicita review automáticamente al owner cuando una PR toca estos
+# ficheros. Sustituye a la opción `reviewers` de dependabot.yml (deprecada).
+
+# Dependencias NuGet (PRs de Dependabot del ecosistema nuget)
+*.csproj @jagobainda
+
+# Workflows y actions (PRs de Dependabot del ecosistema github-actions)
+/.github/workflows/ @jagobainda
