@@ -94,6 +94,9 @@
         <DataTemplate DataType="{x:Type viewmodels:LibraryViewModel}">
             <partials:LibraryView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:FaqsViewModel}">
+            <partials:FaqsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:SettingsViewModel}">
             <partials:SettingsView />
         </DataTemplate>
@@ -229,6 +232,13 @@
                     </Button>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom">
+                    <RadioButton Style="{StaticResource NavItemStyle}"
+                                 GroupName="Navigation"
+                                 IsChecked="{Binding IsFaqsActive, Mode=OneWay}"
+                                 Command="{Binding NavigateToFaqsCommand}"
+                                 ToolTip="{Binding Strings.TitleFaqs, Source={x:Static viewmodels:SettingsViewModel.Instance}}">
+                        <iconPacks:PackIconLucide Kind="CircleQuestionMark" Width="22" Height="22" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                    </RadioButton>
                     <RadioButton Style="{StaticResource NavItemStyle}"
                                  GroupName="Navigation"
                                  IsChecked="{Binding IsSettingsActive, Mode=OneWay}"

@@ -6,6 +6,9 @@ public interface IStrings
     public string TitleGames { get; }
     public string TitleLibrary { get; }
     public string TitleSettings { get; }
+    public string TitleFaqs { get; }
+    public string FaqsSearchPlaceholder { get; }
+    public string FaqsNoResults { get; }
     public string BtnOk { get; }
     public string BtnYes { get; }
     public string BtnNo { get; }
@@ -102,6 +105,9 @@ public class Esp : IStrings
     public string TitleGames => "Mis Juegos";
     public string TitleLibrary => "Biblioteca";
     public string TitleSettings => "Ajustes";
+    public string TitleFaqs => "Preguntas frecuentes";
+    public string FaqsSearchPlaceholder => "Buscar en las preguntas y respuestas...";
+    public string FaqsNoResults => "Sin resultados para tu búsqueda";
     public string BtnOk => "Aceptar";
     public string BtnYes => "Sí";
     public string BtnNo => "No";
@@ -198,6 +204,9 @@ public class Eng : IStrings
     public string TitleGames => "My Games";
     public string TitleLibrary => "Library";
     public string TitleSettings => "Settings";
+    public string TitleFaqs => "FAQs";
+    public string FaqsSearchPlaceholder => "Search questions and answers...";
+    public string FaqsNoResults => "No results for your search";
     public string BtnOk => "OK";
     public string BtnYes => "Yes";
     public string BtnNo => "No";
@@ -294,6 +303,9 @@ public class Cat : IStrings
     public string TitleGames => "Els meus jocs";
     public string TitleLibrary => "Biblioteca";
     public string TitleSettings => "Configuració";
+    public string TitleFaqs => "Preguntes freqüents";
+    public string FaqsSearchPlaceholder => "Cerca a les preguntes i respostes...";
+    public string FaqsNoResults => "Sense resultats per a la teva cerca";
     public string BtnOk => "Acceptar";
     public string BtnYes => "Sí";
     public string BtnNo => "No";
@@ -390,6 +402,9 @@ public class Eus : IStrings
     public string TitleGames => "Nire Jokoak";
     public string TitleLibrary => "Liburutegia";
     public string TitleSettings => "Ezarpenak";
+    public string TitleFaqs => "Ohiko galderak";
+    public string FaqsSearchPlaceholder => "Bilatu galderetan eta erantzunetan...";
+    public string FaqsNoResults => "Ez dago emaitzarik zure bilaketarako";
     public string BtnOk => "Ados";
     public string BtnYes => "Bai";
     public string BtnNo => "Ez";
@@ -486,6 +501,9 @@ public class Gal : IStrings
     public string TitleGames => "Os meus xogos";
     public string TitleLibrary => "Biblioteca";
     public string TitleSettings => "Axustes";
+    public string TitleFaqs => "Preguntas frecuentes";
+    public string FaqsSearchPlaceholder => "Buscar nas preguntas e respostas...";
+    public string FaqsNoResults => "Sen resultados para a túa busca";
     public string BtnOk => "Aceptar";
     public string BtnYes => "Si";
     public string BtnNo => "Non";
@@ -582,6 +600,9 @@ public class Por : IStrings
     public string TitleGames => "Meus Jogos";
     public string TitleLibrary => "Biblioteca";
     public string TitleSettings => "Configurações";
+    public string TitleFaqs => "Perguntas frequentes";
+    public string FaqsSearchPlaceholder => "Pesquisar nas perguntas e respostas...";
+    public string FaqsNoResults => "Sem resultados para sua pesquisa";
     public string BtnOk => "OK";
     public string BtnYes => "Sim";
     public string BtnNo => "Não";
@@ -678,6 +699,9 @@ public class Val : IStrings
     public string TitleGames => "Els meus jocs";
     public string TitleLibrary => "Biblioteca";
     public string TitleSettings => "Ajustos";
+    public string TitleFaqs => "Preguntes freqüents";
+    public string FaqsSearchPlaceholder => "Busca en les preguntes i respostes...";
+    public string FaqsNoResults => "Sense resultats per a la teua cerca";
     public string BtnOk => "Acceptar";
     public string BtnYes => "Sí";
     public string BtnNo => "No";
@@ -774,6 +798,9 @@ public class Fra : IStrings
     public string TitleGames => "Mes jeux";
     public string TitleLibrary => "Bibliothèque";
     public string TitleSettings => "Paramètres";
+    public string TitleFaqs => "Questions fréquentes";
+    public string FaqsSearchPlaceholder => "Rechercher dans les questions et réponses...";
+    public string FaqsNoResults => "Aucun résultat pour votre recherche";
     public string BtnOk => "OK";
     public string BtnYes => "Oui";
     public string BtnNo => "Non";

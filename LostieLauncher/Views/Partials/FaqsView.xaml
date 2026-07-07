@@ -1,0 +1,131 @@
+<UserControl x:Class="LostieLauncher.Views.Partials.FaqsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:LostieLauncher.ViewModels"
+             xmlns:components="clr-namespace:LostieLauncher.Views.Components"
+             xmlns:partials="clr-namespace:LostieLauncher.Views.Partials"
+             xmlns:models="clr-namespace:LostieLauncher.Models"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             d:DataContext="{d:DesignInstance Type=viewmodels:FaqsViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="FaqsSearchBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryFgBrush}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource SecondaryFgBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FaqsClearButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryFgDimBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource OverlayLightBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource SecondaryFgBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel Margin="20">
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource TertiaryBgBrush}"
+                CornerRadius="6" Padding="12,0" Height="40"
+                Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <iconPacks:PackIconLucide Kind="Search" Width="16" Height="16"
+                                          Foreground="{DynamicResource SecondaryFgDimBrush}"
+                                          VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                <Grid Grid.Column="1">
+                    <TextBox x:Name="SearchBox"
+                             Style="{StaticResource FaqsSearchBoxStyle}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding Strings.FaqsSearchPlaceholder, Source={x:Static viewmodels:SettingsViewModel.Instance}}"
+                               Foreground="{DynamicResource SecondaryFgDimBrush}"
+                               FontSize="13" VerticalAlignment="Center"
+                               IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource FaqsClearButtonStyle}"
+                        Command="{Binding ClearSearchCommand}"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding SearchText, Converter={StaticResource StringToVisibilityConverter}}">
+                    <iconPacks:PackIconLucide Kind="X" Width="12" Height="12"
+                                              Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding HasNoResults, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <ItemsControl ItemsSource="{Binding FilteredFaqs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:FaqItem}">
+                            <components:FaqCardComponent
+                                Question="{Binding Question}"
+                                Answer="{Binding Answer}"
+                                IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                                Highlight="{Binding DataContext.SearchText, RelativeSource={RelativeSource AncestorType=partials:FaqsView}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel Visibility="{Binding HasNoResults, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                <iconPacks:PackIconLucide Kind="SearchX"
+                                          Width="36" Height="36"
+                                          HorizontalAlignment="Center"
+                                          Foreground="{DynamicResource SecondaryFgDimBrush}" />
+                <TextBlock Text="{Binding Strings.FaqsNoResults, Source={x:Static viewmodels:SettingsViewModel.Instance}}"
+                           Foreground="{DynamicResource SecondaryFgDimBrush}"
+                           FontSize="13" HorizontalAlignment="Center" Margin="0,12,0,0" />
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

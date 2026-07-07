@@ -37,7 +37,8 @@ public class MainViewModelTests
         await home.RefreshAsync();
         var games = new GamesViewModel(_contentService, library, _telemetryService);
         await games.RefreshAsync();
-        return new MainViewModel(global, home, games, library, settings);
+        var faqs = new FaqsViewModel(settings);
+        return new MainViewModel(global, home, games, library, faqs, settings);
     }
 
     [Fact]
@@ -141,7 +142,8 @@ public class MainViewModelTests
         await home.RefreshAsync();
         var games = new GamesViewModel(_contentService, library, _telemetryService);
         await games.RefreshAsync();
-        var vm = new MainViewModel(global, home, games, library, settings);
+        var faqs = new FaqsViewModel(settings);
+        var vm = new MainViewModel(global, home, games, library, faqs, settings);
 
         // Act
         global.IsDownloading = true;
