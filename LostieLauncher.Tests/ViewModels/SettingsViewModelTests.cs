@@ -138,7 +138,7 @@ public class SettingsViewModelTests
         vm.Language = AppLanguage.Eng;
 
         // Assert
-        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s.Language == AppLanguage.Eng));
+        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s!.Language == AppLanguage.Eng));
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class SettingsViewModelTests
         vm.StartMinimized = true;
 
         // Assert
-        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s.StartMinimized));
+        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s!.StartMinimized));
     }
 
     [Fact]
@@ -271,7 +271,7 @@ public class SettingsViewModelTests
         vm.AutoUpdate = true;
 
         // Assert
-        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s.AutoUpdate));
+        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s!.AutoUpdate));
     }
 
     // -------------------- DownloadDirectory --------------------
@@ -287,7 +287,7 @@ public class SettingsViewModelTests
         vm.DownloadDirectory = @"D:\NewFolder";
 
         // Assert
-        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s.DownloadDirectory == @"D:\NewFolder"));
+        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s!.DownloadDirectory == @"D:\NewFolder"));
         _settingsService.Received(1).EnsureGamesRootDirectoryExists();
     }
 
@@ -305,7 +305,7 @@ public class SettingsViewModelTests
 
         // Assert
         vm.HasSeenWelcome.ShouldBeTrue();
-        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s.HasSeenWelcome));
+        _settingsService.Received(1).Save(Arg.Is<AppSettings>(s => s!.HasSeenWelcome));
     }
 
     [Fact]
