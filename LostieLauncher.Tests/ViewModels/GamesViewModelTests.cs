@@ -23,7 +23,7 @@ public class GamesViewModelTests
         _telemetryService.GetDownloadCountsAsync().Returns(new Dictionary<string, int>());
         // GetGameDirectory is invoked for HasHelpSubfolder; return a path that does not exist
         // so that branch returns false without touching real disk.
-        _contentService.GetGameDirectory(Arg.Any<string>()).Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()));
+        _contentService.GetGameDirectory(Arg.Any<string>()).Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()!));
     }
 
     private LibraryViewModel CreateLibrary() => new(_telemetryService, _contentService, _settingsService, _downloadService, _globalViewModel, _downloadOptions);

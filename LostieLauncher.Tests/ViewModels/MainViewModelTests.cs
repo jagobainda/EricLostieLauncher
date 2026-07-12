@@ -23,7 +23,7 @@ public class MainViewModelTests
         _contentService.GetHomeContentAsync(Arg.Any<bool>()).Returns(new HomeContent());
         _contentService.IsServerActionBlockedAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(false);
         _contentService.GetGameDirectory(Arg.Any<string>()).Returns(ci =>
-            Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()));
+            Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()!));
         _telemetryService.GetDownloadCountsAsync().Returns(new Dictionary<string, int>());
     }
 

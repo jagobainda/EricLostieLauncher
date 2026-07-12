@@ -221,7 +221,7 @@ public class LibraryViewModelTests
             });
         _settingsService.GetGamesRootDirectory().Returns(Path.Combine(Path.GetTempPath(), "LostieLauncherTests-root"));
         _contentService.GetGameDirectory(Arg.Any<string>())
-            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()));
+            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()!));
         _contentService.GetGamesAsync().Returns([
             TestData.Game(name: "Alpha", version: "1.0.0"),
             TestData.Game(name: "Bravo", version: "1.0.0"),
@@ -272,7 +272,7 @@ public class LibraryViewModelTests
             });
         _settingsService.GetGamesRootDirectory().Returns(Path.Combine(Path.GetTempPath(), "LostieLauncherTests-root"));
         _contentService.GetGameDirectory(Arg.Any<string>())
-            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()));
+            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()!));
         _contentService.GetGamesAsync().Returns([TestData.Game(name: "Alpha", version: "1.0.0")]);
 
         var vm = CreateSut();
@@ -313,7 +313,7 @@ public class LibraryViewModelTests
             });
         _settingsService.GetGamesRootDirectory().Returns(Path.Combine(Path.GetTempPath(), "LostieLauncherTests-root"));
         _contentService.GetGameDirectory(Arg.Any<string>())
-            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()));
+            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()!));
         _contentService.GetGamesAsync().Returns([TestData.Game(name: "Alpha", version: "1.0.0")]);
 
         var vm = CreateSut();
@@ -344,7 +344,7 @@ public class LibraryViewModelTests
             .Returns<Task<DownloadResult>>(_ => { attempts++; throw new IOException("boom"); });
         _settingsService.GetGamesRootDirectory().Returns(Path.Combine(Path.GetTempPath(), "LostieLauncherTests-root"));
         _contentService.GetGameDirectory(Arg.Any<string>())
-            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()));
+            .Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-extract", ci.Arg<string>()!));
         _contentService.GetGamesAsync().Returns([TestData.Game(name: "Alpha", version: "1.0.0")]);
 
         var vm = CreateSut();
