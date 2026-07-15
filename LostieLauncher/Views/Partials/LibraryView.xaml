@@ -10,7 +10,6 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:LibraryViewModel}"
              mc:Ignorable="d">
     <Grid>
-        <!-- Skeleton loading state: matches ScrollViewer > ItemsControl[Margin=20] structure of real content -->
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel Margin="20">
@@ -47,7 +46,6 @@
                             GameTitle="{Binding Nombre}"
                             GameLogo="{Binding LogoUrl, Converter={StaticResource UriStringToImageSourceConverter}}"
                             GameSize="{Binding PesoFormateado}"
-                            TotalDownloads="{Binding TotalDownloads}"
                             LatestVersion="{Binding Version}"
                             RutaRelativa="{Binding RutaRelativa}"
                             PlaytimeText="{Binding PlaytimeText}"

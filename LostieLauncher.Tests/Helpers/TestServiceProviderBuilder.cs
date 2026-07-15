@@ -25,7 +25,6 @@ public sealed class TestServiceProviderBuilder
     public TestServiceProviderBuilder()
     {
         // Default option records (mirror production). Tests may override via With<T>().
-        _services.AddSingleton(new TelemetryOptions(ApiKey: "test-key", Endpoint: "https://telemetry.test/"));
         _services.AddSingleton(new ContentOptions(
             ContentEndpoint: "https://content.test/list.json",
             NotificationsEndpoint: "https://content.test/notifications.json",
@@ -38,7 +37,6 @@ public sealed class TestServiceProviderBuilder
         _services.AddSingleton(Substitute.For<IWindowsStartupService>());
         _services.AddSingleton(Substitute.For<IContentService>());
         _services.AddSingleton(Substitute.For<IDownloadService>());
-        _services.AddSingleton(Substitute.For<ITelemetryService>());
 
         // ViewModels under test are registered on demand via With<T>(); we don't register
         // them by default to avoid pulling their constructors (which often kick off

@@ -80,7 +80,6 @@ LostieLauncher/
 | `IContentService`        | Fetches the game catalog, news, and registers installed games |
 | `IDownloadService`       | Manages downloads, file extraction, and the key system        |
 | `ISettingsService`       | Loads and persists configuration in `launcher_settings.json`  |
-| `ITelemetryService`      | Sends download data and queries statistics                    |
 | `IWindowsStartupService` | Integration with the Windows registry for automatic startup   |
 | `IUpdateGateway`         | Seam over the Velopack update manager; checks for app updates  |
 | `IUpdateNotifier`        | Prompts the user to apply/restart via WPF dialogs             |

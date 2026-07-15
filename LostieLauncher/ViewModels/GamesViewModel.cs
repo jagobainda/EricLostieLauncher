@@ -14,7 +14,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
 {
     private readonly IContentService _contentService;
     private readonly LibraryViewModel _libraryViewModel;
-    private readonly ITelemetryService _telemetryService;
     private const string HelpFolderName = "ayuda";
     private bool _disposed;
 
@@ -33,11 +32,10 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     public bool IsEmpty => !IsLoading && InstalledGames.Count == 0;
     public bool IsListVisible => !IsLoading && InstalledGames.Count > 0;
 
-    public GamesViewModel(IContentService contentService, LibraryViewModel libraryViewModel, ITelemetryService telemetryService)
+    public GamesViewModel(IContentService contentService, LibraryViewModel libraryViewModel)
     {
         _contentService = contentService;
         _libraryViewModel = libraryViewModel;
-        _telemetryService = telemetryService;
         _libraryViewModel.GameInstalled += OnGameInstalled;
         _ = LoadInstalledGamesAsync(waitForLibrary: true);
     }
@@ -203,10 +201,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
 
         try
         {
-            var gameVersion = installedGame?.InstalledVersion ?? "0.0.0";
-            var libraryGame = _libraryViewModel.Games.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
-            _telemetryService.TrackGameLaunched(libraryGame?.GameId ?? gameName.ToLowerInvariant(), gameVersion);
-
             var startTime = DateTime.UtcNow;
             var process = Process.Start(new ProcessStartInfo(exePath) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(exePath)! });
             if (process is not null)

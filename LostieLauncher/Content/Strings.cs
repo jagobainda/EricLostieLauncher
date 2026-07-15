@@ -179,7 +179,7 @@ public class Esp : IStrings
     public string HashMismatchTitle => "Error de integridad";
     public string HashMismatchMessage => "El archivo descargado está dañado o ha sido modificado. Por favor, intenta de nuevo. Si el problema persiste, escribe en #bugs-launcher en Discord.";
     public string WelcomeDialogTitle => "¡Bienvenido al Lostie Launcher!";
-    public string WelcomeDialogDescription => "Descarga, actualiza y juega tus títulos favoritos en un solo lugar. Simple, rápido y sin complicaciones.\n\nTu privacidad es importante. No recogemos datos personales. Solo consultamos información básica de tu PC, como los núcleos del procesador o la RAM disponible para optimizar los juegos.\n\nEste proyecto es opensource. ¿Dudas sobre cómo funciona? Consulta el código fuente";
+    public string WelcomeDialogDescription => "Descarga, actualiza y juega tus títulos favoritos en un solo lugar. Simple, rápido y sin complicaciones.\n\nTu privacidad es importante. No recopilamos ninguna información ni dato de ningún tipo.\n\nEste proyecto es opensource. ¿Dudas sobre cómo funciona? Consulta el código fuente";
     public string WelcomeDialogContinue => "Continuar";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Cambiar a versión especial";
@@ -278,7 +278,7 @@ public class Eng : IStrings
     public string HashMismatchTitle => "Integrity error";
     public string HashMismatchMessage => "The downloaded file is corrupted or has been tampered with. Please try again. If the problem persists, write in #bugs-launcher on Discord.";
     public string WelcomeDialogTitle => "Welcome to Lostie Launcher!";
-    public string WelcomeDialogDescription => "Download, update, and play your favorite games in one place. Simple, fast, and hassle-free.\n\nYour privacy is important. We don't collect personal data. We only check basic information about your PC, like processor cores or available RAM to optimize your games.\n\nThis project is open source. Questions about how it works? Check the source code";
+    public string WelcomeDialogDescription => "Download, update, and play your favorite games in one place. Simple, fast, and hassle-free.\n\nYour privacy is important. We don't collect any information or data of any kind.\n\nThis project is open source. Questions about how it works? Check the source code";
     public string WelcomeDialogContinue => "Continue";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Switch to special version";
@@ -377,7 +377,7 @@ public class Cat : IStrings
     public string HashMismatchTitle => "Error d'integritat";
     public string HashMismatchMessage => "El fitxer descarregat està danyat o ha estat modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #bugs-launcher a Discord.";
     public string WelcomeDialogTitle => "Benvingut al Lostie Launcher!";
-    public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim dades personals. Només consultem informació bàsica del teu PC, com els nuclis del processador o la RAM disponible per a optimitzar els teus jocs.\n\nAquest projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
+    public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim cap tipus d'informació ni de dades.\n\nAquest projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
     public string WelcomeDialogContinue => "Continuar";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Canviar a versió especial";
@@ -476,7 +476,7 @@ public class Eus : IStrings
     public string HashMismatchTitle => "Osotasun errorea";
     public string HashMismatchMessage => "Deskargatutako fitxategia hondatuta edo aldatuta dago. Mesedez, saiatu berriro. Arazoa jarraitzen badu, idatzi #bugs-launcher kanalean Discord-en.";
     public string WelcomeDialogTitle => "Ongi etorri Lostie Launcher-era!";
-    public string WelcomeDialogDescription => "Deskargatu, eguneratu eta jolastu zure joko gogokoak leku batean. Sinplea, azkarra eta konplikazio gabe.\n\nZure pribatutasuna garrantzitsua da. Ez dugu datu pertsonalik biltzen. PCaren oinarrizko informazioa bakarrik kontsultatzen dugu, prozesadoreko nukleak edo eskuragarri dagoen RAMa adibidez, zure jokoak optimizatzeko.\n\nProiektu hau opensource. Zalantzak nola funtzionatzen duen jakin nahi? Bilatu iturburu kodea";
+    public string WelcomeDialogDescription => "Deskargatu, eguneratu eta jolastu zure joko gogokoak leku batean. Sinplea, azkarra eta konplikazio gabe.\n\nZure pribatutasuna garrantzitsua da. Ez dugu inolako informaziorik ez daturik biltzen.\n\nProiektu hau opensource. Zalantzak nola funtzionatzen duen jakin nahi? Bilatu iturburu kodea";
     public string WelcomeDialogContinue => "Jarraitu";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Bertsio berezira aldatu";
@@ -575,7 +575,7 @@ public class Gal : IStrings
     public string HashMismatchTitle => "Erro de integridade";
     public string HashMismatchMessage => "O ficheiro descargado está danado ou foi modificado. Por favor, téntao de novo. Se o problema persiste, escribe en #bugs-launcher en Discord.";
     public string WelcomeDialogTitle => "Benvido ao Lostie Launcher!";
-    public string WelcomeDialogDescription => "Descarga, actualiza e xoga os teus xogos favoritos nun só lugar. Simple, rápido e sen complicacións.\n\nA túa privacidade é importante. Non recollemos datos persoais. Só consultamos información básica do teu PC, como os núcleos do procesador ou a RAM dispoñible para optimizar os teus xogos.\n\nEste proxecto é opensource. Dúbidas sobre como funciona? Consulta o código fonte";
+    public string WelcomeDialogDescription => "Descarga, actualiza e xoga os teus xogos favoritos nun só lugar. Simple, rápido e sen complicacións.\n\nA túa privacidade é importante. Non recollemos ningún tipo de información nin de datos.\n\nEste proxecto é opensource. Dúbidas sobre como funciona? Consulta o código fonte";
     public string WelcomeDialogContinue => "Continuar";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Cambiar a versión especial";
@@ -674,7 +674,7 @@ public class Por : IStrings
     public string HashMismatchTitle => "Erro de integridade";
     public string HashMismatchMessage => "O arquivo baixado está corrompido ou foi modificado. Por favor, tente novamente. Se o problema persistir, escreva em #bugs-launcher no Discord.";
     public string WelcomeDialogTitle => "Bem-vindo ao Lostie Launcher!";
-    public string WelcomeDialogDescription => "Baixe, atualize e jogue seus jogos favoritos em um único lugar. Simples, rápido e sem complicações.\n\nSua privacidade é importante. Não coletamos dados pessoais. Apenas consultamos informações básicas do seu PC, como núcleos do processador ou RAM disponível para otimizar seus jogos.\n\nEste projeto é open source. Dúvidas sobre como funciona? Consulte o código-fonte";
+    public string WelcomeDialogDescription => "Baixe, atualize e jogue seus jogos favoritos em um único lugar. Simples, rápido e sem complicações.\n\nSua privacidade é importante. Não coletamos nenhum tipo de informação ou dado.\n\nEste projeto é open source. Dúvidas sobre como funciona? Consulte o código-fonte";
     public string WelcomeDialogContinue => "Continuar";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Mudar para versão especial";
@@ -773,7 +773,7 @@ public class Val : IStrings
     public string HashMismatchTitle => "Error d'integritat";
     public string HashMismatchMessage => "El fitxer descarregat està danyat o ha sigut modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #bugs-launcher a Discord.";
     public string WelcomeDialogTitle => "Benvingut al Lostie Launcher!";
-    public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim dades personals. Només consultem informació bàsica del teu PC, com els nuclis del processador o la RAM disponible per a optimitzar els teus jocs.\n\nEst projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
+    public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim cap tipus d'informació ni de dades.\n\nEst projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
     public string WelcomeDialogContinue => "Continuar";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Canviar a versió especial";
@@ -872,7 +872,7 @@ public class Fra : IStrings
     public string HashMismatchTitle => "Erreur d'intégrité";
     public string HashMismatchMessage => "Le fichier téléchargé est corrompu ou a été modifié. Veuillez réessayer. Si le problème persiste, écrivez dans #bugs-launcher sur Discord.";
     public string WelcomeDialogTitle => "Bienvenue dans Lostie Launcher !";
-    public string WelcomeDialogDescription => "Téléchargez, mettez à jour et jouez à vos jeux préférés en un seul endroit. Simple, rapide et sans tracas.\n\nVotre vie privée compte. Nous ne collectons pas de données personnelles. Nous consultons uniquement des informations basiques sur votre PC, comme les cœurs du processeur ou la RAM disponible pour optimiser vos jeux.\n\nCe projet est open source. Des questions sur le fonctionnement ? Consultez le code source";
+    public string WelcomeDialogDescription => "Téléchargez, mettez à jour et jouez à vos jeux préférés en un seul endroit. Simple, rapide et sans tracas.\n\nVotre vie privée compte. Nous ne collectons aucune information ni donnée d'aucune sorte.\n\nCe projet est open source. Des questions sur le fonctionnement ? Consultez le code source";
     public string WelcomeDialogContinue => "Continuer";
     public string RepositoryUrl => "https://github.com/jagobainda/LostieLauncher";
     public string SpecialVersionDialogTitle => "Passer à la version spéciale";
