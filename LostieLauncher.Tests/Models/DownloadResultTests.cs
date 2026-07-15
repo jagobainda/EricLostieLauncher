@@ -41,6 +41,18 @@ public class DownloadResultTests
     }
 
     [Fact]
+    public void PermissionDenied_BuildsResultWithPermissionDeniedOutcomeAndNoError()
+    {
+        // Arrange & Act
+        var result = DownloadResult.PermissionDenied();
+
+        // Assert — a permissions failure is distinct from a generic failure so the UI can
+        // point the user at the download-path setting instead of showing the generic error.
+        result.Outcome.ShouldBe(DownloadOutcome.PermissionDenied);
+        result.ErrorMessage.ShouldBeNull();
+    }
+
+    [Fact]
     public void DownloadProgressInfo_WhenConstructedWithoutOptionalFields_AppliesDocumentedDefaults()
     {
         // Arrange & Act

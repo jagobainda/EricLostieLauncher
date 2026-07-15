@@ -121,6 +121,11 @@ public class DownloadService : IDownloadService
             Logs.ErrorLogManager($"Download failed after {MaxRetries + 1} attempts, giving up. Last error: {lastError?.Message}");
             return DownloadResult.Failed("Download failed after maximum retries.");
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            Logs.ErrorLogManager(ex);
+            return DownloadResult.PermissionDenied();
+        }
         catch (Exception ex)
         {
             Logs.ErrorLogManager(ex);
