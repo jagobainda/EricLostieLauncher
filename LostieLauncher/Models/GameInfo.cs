@@ -44,9 +44,6 @@ public partial class GameInfo : ObservableObject
     [JsonIgnore]
     public string PesoFormateado => PesoGB >= 1 ? $"{PesoGB.ToString("0.#", CultureInfo.InvariantCulture)} GB" : $"{(PesoGB * 1024).ToString("0", CultureInfo.InvariantCulture)} MB";
 
-    [JsonIgnore]
-    public int TotalDownloads { get; set; }
-
     [ObservableProperty]
     [JsonIgnore]
     public partial GameDownloadStatus DownloadStatus { get; set; } = GameDownloadStatus.Available;

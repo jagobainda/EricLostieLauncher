@@ -9,7 +9,6 @@ namespace LostieLauncher.Tests.ViewModels;
 public class GamesViewModelTests
 {
     private readonly IContentService _contentService = Substitute.For<IContentService>();
-    private readonly ITelemetryService _telemetryService = Substitute.For<ITelemetryService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDownloadService _downloadService = Substitute.For<IDownloadService>();
     private readonly DownloadOptions _downloadOptions = new(BaseUrl: "https://download.test");
@@ -20,19 +19,18 @@ public class GamesViewModelTests
         _contentService.GetGamesAsync().Returns([]);
         _contentService.GetLocalGamesAsync().Returns([]);
         _contentService.GetAllPlaytimesAsync().Returns(new Dictionary<Guid, int>());
-        _telemetryService.GetDownloadCountsAsync().Returns(new Dictionary<string, int>());
         // GetGameDirectory is invoked for HasHelpSubfolder; return a path that does not exist
         // so that branch returns false without touching real disk.
         _contentService.GetGameDirectory(Arg.Any<string>()).Returns(ci => Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()!));
     }
 
-    private LibraryViewModel CreateLibrary() => new(_telemetryService, _contentService, _settingsService, _downloadService, _globalViewModel, _downloadOptions);
+    private LibraryViewModel CreateLibrary() => new(_contentService, _settingsService, _downloadService, _globalViewModel, _downloadOptions);
 
     private async Task<GamesViewModel> CreateSutAsync()
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library, _telemetryService);
+        var sut = new GamesViewModel(_contentService, library);
         // Wait for the constructor's fire-and-forget LoadInstalledGamesAsync to finish.
         await sut.RefreshAsync();
         return sut;
@@ -266,7 +264,7 @@ public class GamesViewModelTests
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library, _telemetryService);
+        var sut = new GamesViewModel(_contentService, library);
         await sut.RefreshAsync();
         GetGameInstalledSubscriberCount(library).ShouldBe(1);
 

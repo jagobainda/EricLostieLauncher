@@ -53,14 +53,6 @@ public partial class GameCardComponent : UserControl
         set => SetValue(GameSizeProperty, value);
     }
 
-    public static readonly DependencyProperty TotalDownloadsProperty = DependencyProperty.Register(nameof(TotalDownloads), typeof(string), typeof(GameCardComponent), new PropertyMetadata(string.Empty));
-
-    public string TotalDownloads
-    {
-        get => (string)GetValue(TotalDownloadsProperty);
-        set => SetValue(TotalDownloadsProperty, value);
-    }
-
     public static readonly DependencyProperty LatestVersionProperty = DependencyProperty.Register(nameof(LatestVersion), typeof(string), typeof(GameCardComponent), new PropertyMetadata(string.Empty, OnDownloadArgsSourceChanged));
 
     public string LatestVersion
@@ -77,9 +69,6 @@ public partial class GameCardComponent : UserControl
         set => SetValue(RutaRelativaProperty, value);
     }
 
-    // Argumentos de descarga (GameId + versión + ruta) expuestos como una sola DP de solo lectura,
-    // recalculada al cambiar cualquiera de las tres fuentes. Evita repetir el MultiBinding en cada
-    // botón de la tarjeta (descargar / reanudar / actualizar).
     private static readonly DependencyPropertyKey DownloadArgsPropertyKey = DependencyProperty.RegisterReadOnly(nameof(DownloadArgs), typeof(GameDownloadArgs), typeof(GameCardComponent), new PropertyMetadata(null));
 
     public static readonly DependencyProperty DownloadArgsProperty = DownloadArgsPropertyKey.DependencyProperty;

@@ -16,7 +16,6 @@ namespace LostieLauncher.ViewModels;
 
 public partial class LibraryViewModel : ObservableObject
 {
-    private readonly ITelemetryService _telemetryService;
     private readonly IContentService _contentService;
     private readonly ISettingsService _settingsService;
     private readonly IDownloadService _downloadService;
@@ -51,10 +50,9 @@ public partial class LibraryViewModel : ObservableObject
 
     public Task LibraryLoadedTask => _libraryLoadedTcs.Task;
 
-    public LibraryViewModel(ITelemetryService telemetryService, IContentService contentService, ISettingsService settingsService,
+    public LibraryViewModel(IContentService contentService, ISettingsService settingsService,
         IDownloadService downloadService, GlobalViewModel globalViewModel, DownloadOptions downloadOptions)
     {
-        _telemetryService = telemetryService;
         _contentService = contentService;
         _settingsService = settingsService;
         _downloadService = downloadService;
@@ -74,7 +72,6 @@ public partial class LibraryViewModel : ObservableObject
             var result = await _contentService.GetGamesAsync();
             var localGames = await _contentService.GetLocalGamesAsync();
             var playtimes = await _contentService.GetAllPlaytimesAsync();
-            var downloadCounts = await _telemetryService.GetDownloadCountsAsync();
 
             var installedById = localGames
                 .Where(g => g.Id != Guid.Empty)
@@ -94,9 +91,6 @@ public partial class LibraryViewModel : ObservableObject
 
                 if (game.Id != Guid.Empty && playtimes.TryGetValue(game.Id, out var pt))
                     game.PlaytimeMinutes = pt;
-
-                if (downloadCounts.TryGetValue(game.GameId, out var count))
-                    game.TotalDownloads = count;
             }
 
             Games = new ObservableCollection<GameInfo>(result);

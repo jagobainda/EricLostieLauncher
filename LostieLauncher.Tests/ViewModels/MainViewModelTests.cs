@@ -8,7 +8,6 @@ namespace LostieLauncher.Tests.ViewModels;
 public class MainViewModelTests
 {
     private readonly IContentService _contentService = Substitute.For<IContentService>();
-    private readonly ITelemetryService _telemetryService = Substitute.For<ITelemetryService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IWindowsStartupService _startupService = Substitute.For<IWindowsStartupService>();
     private readonly IDownloadService _downloadService = Substitute.For<IDownloadService>();
@@ -24,18 +23,17 @@ public class MainViewModelTests
         _contentService.IsServerActionBlockedAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(false);
         _contentService.GetGameDirectory(Arg.Any<string>()).Returns(ci =>
             Path.Combine(Path.GetTempPath(), "LostieLauncherTests-nonexistent", ci.Arg<string>()!));
-        _telemetryService.GetDownloadCountsAsync().Returns(new Dictionary<string, int>());
     }
 
     private async Task<MainViewModel> CreateSutAsync()
     {
         var global = new GlobalViewModel();
         var settings = new SettingsViewModel(_settingsService, _startupService, global, Substitute.For<IUpdateService>());
-        var library = new LibraryViewModel(_telemetryService, _contentService, _settingsService, _downloadService, global, _downloadOptions);
+        var library = new LibraryViewModel(_contentService, _settingsService, _downloadService, global, _downloadOptions);
         await library.LibraryLoadedTask;
         var home = new HomeViewModel(_contentService, settings);
         await home.RefreshAsync();
-        var games = new GamesViewModel(_contentService, library, _telemetryService);
+        var games = new GamesViewModel(_contentService, library);
         await games.RefreshAsync();
         var faqs = new FaqsViewModel(settings);
         return new MainViewModel(global, home, games, library, faqs, settings);
@@ -136,11 +134,11 @@ public class MainViewModelTests
         // Arrange
         var global = new GlobalViewModel();
         var settings = new SettingsViewModel(_settingsService, _startupService, global, Substitute.For<IUpdateService>());
-        var library = new LibraryViewModel(_telemetryService, _contentService, _settingsService, _downloadService, global, _downloadOptions);
+        var library = new LibraryViewModel(_contentService, _settingsService, _downloadService, global, _downloadOptions);
         await library.LibraryLoadedTask;
         var home = new HomeViewModel(_contentService, settings);
         await home.RefreshAsync();
-        var games = new GamesViewModel(_contentService, library, _telemetryService);
+        var games = new GamesViewModel(_contentService, library);
         await games.RefreshAsync();
         var faqs = new FaqsViewModel(settings);
         var vm = new MainViewModel(global, home, games, library, faqs, settings);

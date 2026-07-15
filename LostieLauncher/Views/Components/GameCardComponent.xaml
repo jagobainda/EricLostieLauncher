@@ -189,13 +189,6 @@
                                Foreground="{DynamicResource SecondaryFgDimBrush}" FontSize="12" Margin="4,0,14,0"
                                VerticalAlignment="Center" />
 
-                    <!-- SECCIÓN DE NÚMERO DE DESCARGAS DESHABILITADA POR EL MOMENTO -->
-                    <!--<iconPacks:PackIconMaterial Kind="Download" Width="12" Height="12"
-                                               Foreground="{DynamicResource SecondaryFgDimBrush}" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding TotalDownloads, ElementName=Root}"
-                               Foreground="{DynamicResource SecondaryFgDimBrush}" FontSize="12" Margin="4,0,14,0"
-                               VerticalAlignment="Center" />-->
-
                     <iconPacks:PackIconMaterial Kind="TagOutline" Width="12" Height="12"
                                                Foreground="{DynamicResource SecondaryFgDimBrush}" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding LatestVersion, ElementName=Root}"

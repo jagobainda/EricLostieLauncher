@@ -9,7 +9,6 @@ namespace LostieLauncher.Tests.ViewModels;
 [Collection(WpfCollection.Name)]
 public class LibraryViewModelTests
 {
-    private readonly ITelemetryService _telemetryService = Substitute.For<ITelemetryService>();
     private readonly IContentService _contentService = Substitute.For<IContentService>();
     private readonly ISettingsService _settingsService = Substitute.For<ISettingsService>();
     private readonly IDownloadService _downloadService = Substitute.For<IDownloadService>();
@@ -22,11 +21,10 @@ public class LibraryViewModelTests
         _contentService.GetGamesAsync().Returns([]);
         _contentService.GetLocalGamesAsync().Returns([]);
         _contentService.GetAllPlaytimesAsync().Returns(new Dictionary<Guid, int>());
-        _telemetryService.GetDownloadCountsAsync().Returns(new Dictionary<string, int>());
     }
 
     private LibraryViewModel CreateSut() => new(
-        _telemetryService, _contentService, _settingsService,
+        _contentService, _settingsService,
         _downloadService, _globalViewModel, _downloadOptions);
 
     [Fact]
@@ -113,24 +111,6 @@ public class LibraryViewModelTests
 
         // Assert
         vm.Games.Single().PlaytimeMinutes.ShouldBe(42);
-    }
-
-    [Fact]
-    public async Task LoadGames_AppliesDownloadCountsFromTelemetry_KeyedByGameSlug()
-    {
-        // Arrange — slug for "Cool Game" is "cool-game".
-        _contentService.GetGamesAsync().Returns([
-            TestData.Game(name: "Cool Game")
-        ]);
-        _telemetryService.GetDownloadCountsAsync()
-            .Returns(new Dictionary<string, int> { ["cool-game"] = 99 });
-        var vm = CreateSut();
-
-        // Act
-        await vm.LibraryLoadedTask;
-
-        // Assert
-        vm.Games.Single().TotalDownloads.ShouldBe(99);
     }
 
     [Fact]
