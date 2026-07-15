@@ -169,7 +169,7 @@ public class Esp : IStrings
     public string DownloadKeyInvalidTitle => "Clave no válida";
     public string DownloadKeyInvalidMessage => "El formato de la clave no es válido. Debe seguir el formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Error en la descarga";
-    public string DownloadErrorMessage => "No se pudo completar la descarga. Por favor, intenta más tarde. Si el problema persiste, escribe en #bugs-launcher en Discord.";
+    public string DownloadErrorMessage => "No se pudo completar la descarga. Por favor, intenta más tarde. Si el problema persiste, escribe en #testeo-launcher en Discord.";
     public string DownloadPermissionDeniedTitle => "Permisos insuficientes";
     public string DownloadPermissionDeniedMessage => "El launcher no tiene permisos para instalar el juego en la ruta de descarga elegida. Prueba a cambiar a otra ruta en Ajustes.";
     public string BtnCancel => "Cancelar";
@@ -181,7 +181,7 @@ public class Esp : IStrings
     public string GameExeNotFoundTitle => "Juego no encontrado";
     public string GameExeNotFoundMessage => "No se encontró el ejecutable del juego. Intenta reinstalarlo.";
     public string HashMismatchTitle => "Error de integridad";
-    public string HashMismatchMessage => "El archivo descargado está dañado o ha sido modificado. Por favor, intenta de nuevo. Si el problema persiste, escribe en #bugs-launcher en Discord.";
+    public string HashMismatchMessage => "El archivo descargado está dañado o ha sido modificado. Por favor, intenta de nuevo. Si el problema persiste, escribe en #testeo-launcher en Discord.";
     public string WelcomeDialogTitle => "¡Bienvenido al Lostie Launcher!";
     public string WelcomeDialogDescription => "Descarga, actualiza y juega tus títulos favoritos en un solo lugar. Simple, rápido y sin complicaciones.\n\nTu privacidad es importante. No recopilamos ninguna información ni dato de ningún tipo.\n\nEste proyecto es opensource. ¿Dudas sobre cómo funciona? Consulta el código fuente";
     public string WelcomeDialogContinue => "Continuar";
@@ -270,7 +270,7 @@ public class Eng : IStrings
     public string DownloadKeyInvalidTitle => "Invalid key";
     public string DownloadKeyInvalidMessage => "The key format is invalid. It must follow the format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Download failed";
-    public string DownloadErrorMessage => "The download could not be completed. Please try again later. If the problem persists, write in #bugs-launcher on Discord.";
+    public string DownloadErrorMessage => "The download could not be completed. Please try again later. If the problem persists, write in #testeo-launcher on Discord.";
     public string DownloadPermissionDeniedTitle => "Insufficient permissions";
     public string DownloadPermissionDeniedMessage => "The launcher doesn't have permission to install the game in the chosen download path. Try changing to a different path in Settings.";
     public string BtnCancel => "Cancel";
@@ -282,7 +282,7 @@ public class Eng : IStrings
     public string GameExeNotFoundTitle => "Game not found";
     public string GameExeNotFoundMessage => "The game executable was not found. Try reinstalling the game.";
     public string HashMismatchTitle => "Integrity error";
-    public string HashMismatchMessage => "The downloaded file is corrupted or has been tampered with. Please try again. If the problem persists, write in #bugs-launcher on Discord.";
+    public string HashMismatchMessage => "The downloaded file is corrupted or has been tampered with. Please try again. If the problem persists, write in #testeo-launcher on Discord.";
     public string WelcomeDialogTitle => "Welcome to Lostie Launcher!";
     public string WelcomeDialogDescription => "Download, update, and play your favorite games in one place. Simple, fast, and hassle-free.\n\nYour privacy is important. We don't collect any information or data of any kind.\n\nThis project is open source. Questions about how it works? Check the source code";
     public string WelcomeDialogContinue => "Continue";
@@ -371,7 +371,7 @@ public class Cat : IStrings
     public string DownloadKeyInvalidTitle => "Clau no vàlida";
     public string DownloadKeyInvalidMessage => "El format de la clau no és vàlid. Ha de tenir el format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Ha fallat la descàrrega";
-    public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #bugs-launcher en Discord.";
+    public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #testeo-launcher en Discord.";
     public string DownloadPermissionDeniedTitle => "Permisos insuficients";
     public string DownloadPermissionDeniedMessage => "El launcher no té permisos per instal·lar el joc a la ruta de descàrrega triada. Prova a canviar a una altra ruta a Configuració.";
     public string BtnCancel => "Cancel·lar";
@@ -383,7 +383,7 @@ public class Cat : IStrings
     public string GameExeNotFoundTitle => "Joc no trobat";
     public string GameExeNotFoundMessage => "No s'ha trobat l'executable del joc. Prova a reinstal·lar-lo.";
     public string HashMismatchTitle => "Error d'integritat";
-    public string HashMismatchMessage => "El fitxer descarregat està danyat o ha estat modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #bugs-launcher a Discord.";
+    public string HashMismatchMessage => "El fitxer descarregat està danyat o ha estat modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #testeo-launcher a Discord.";
     public string WelcomeDialogTitle => "Benvingut al Lostie Launcher!";
     public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim cap tipus d'informació ni de dades.\n\nAquest projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
     public string WelcomeDialogContinue => "Continuar";
@@ -472,7 +472,7 @@ public class Eus : IStrings
     public string DownloadKeyInvalidTitle => "Gako baliogabea";
     public string DownloadKeyInvalidMessage => "Gakoaren formatua ez da baliozkoa. Formatua XXXX-XXXX-XXXX-XXXX-XXXX izan behar da.";
     public string DownloadErrorTitle => "Deskargetak huts egin du";
-    public string DownloadErrorMessage => "Deskargetak ezin izan du osatu. Mesedez, geroago saiatu. Arazoa jarraitzen badu, idatzi #bugs-launcher kanalean Discord-en.";
+    public string DownloadErrorMessage => "Deskargetak ezin izan du osatu. Mesedez, geroago saiatu. Arazoa jarraitzen badu, idatzi #testeo-launcher kanalean Discord-en.";
     public string DownloadPermissionDeniedTitle => "Baimen nahikorik ez";
     public string DownloadPermissionDeniedMessage => "Launcher-ak ez du baimenik jokoa aukeratutako deskarga bidean instalatzeko. Saiatu Ezarpenetan beste bide bat aukeratzen.";
     public string BtnCancel => "Utzi";
@@ -484,7 +484,7 @@ public class Eus : IStrings
     public string GameExeNotFoundTitle => "Jokoa ez da aurkitu";
     public string GameExeNotFoundMessage => "Jokoaren exekutagarria ez da aurkitu. Saiatu berrinstalatzea.";
     public string HashMismatchTitle => "Osotasun errorea";
-    public string HashMismatchMessage => "Deskargatutako fitxategia hondatuta edo aldatuta dago. Mesedez, saiatu berriro. Arazoa jarraitzen badu, idatzi #bugs-launcher kanalean Discord-en.";
+    public string HashMismatchMessage => "Deskargatutako fitxategia hondatuta edo aldatuta dago. Mesedez, saiatu berriro. Arazoa jarraitzen badu, idatzi #testeo-launcher kanalean Discord-en.";
     public string WelcomeDialogTitle => "Ongi etorri Lostie Launcher-era!";
     public string WelcomeDialogDescription => "Deskargatu, eguneratu eta jolastu zure joko gogokoak leku batean. Sinplea, azkarra eta konplikazio gabe.\n\nZure pribatutasuna garrantzitsua da. Ez dugu inolako informaziorik ez daturik biltzen.\n\nProiektu hau opensource. Zalantzak nola funtzionatzen duen jakin nahi? Bilatu iturburu kodea";
     public string WelcomeDialogContinue => "Jarraitu";
@@ -573,7 +573,7 @@ public class Gal : IStrings
     public string DownloadKeyInvalidTitle => "Clave non válida";
     public string DownloadKeyInvalidMessage => "O formato da clave non é válido. Debe ter o formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Erro na descarga";
-    public string DownloadErrorMessage => "Non foi posible completar a descarga. Inténtao de novo máis tarde. Se o problema persiste, escribe en #bugs-launcher en Discord.";
+    public string DownloadErrorMessage => "Non foi posible completar a descarga. Inténtao de novo máis tarde. Se o problema persiste, escribe en #testeo-launcher en Discord.";
     public string DownloadPermissionDeniedTitle => "Permisos insuficientes";
     public string DownloadPermissionDeniedMessage => "O launcher non ten permisos para instalar o xogo na ruta de descarga elixida. Proba a cambiar a outra ruta en Axustes.";
     public string BtnCancel => "Cancelar";
@@ -585,7 +585,7 @@ public class Gal : IStrings
     public string GameExeNotFoundTitle => "Xogo non atopado";
     public string GameExeNotFoundMessage => "Non se atopou o executable do xogo. Intenta reinstalalo.";
     public string HashMismatchTitle => "Erro de integridade";
-    public string HashMismatchMessage => "O ficheiro descargado está danado ou foi modificado. Por favor, téntao de novo. Se o problema persiste, escribe en #bugs-launcher en Discord.";
+    public string HashMismatchMessage => "O ficheiro descargado está danado ou foi modificado. Por favor, téntao de novo. Se o problema persiste, escribe en #testeo-launcher en Discord.";
     public string WelcomeDialogTitle => "Benvido ao Lostie Launcher!";
     public string WelcomeDialogDescription => "Descarga, actualiza e xoga os teus xogos favoritos nun só lugar. Simple, rápido e sen complicacións.\n\nA túa privacidade é importante. Non recollemos ningún tipo de información nin de datos.\n\nEste proxecto é opensource. Dúbidas sobre como funciona? Consulta o código fonte";
     public string WelcomeDialogContinue => "Continuar";
@@ -674,7 +674,7 @@ public class Por : IStrings
     public string DownloadKeyInvalidTitle => "Chave inválida";
     public string DownloadKeyInvalidMessage => "O formato da chave é inválido. Deve seguir o formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Falha no download";
-    public string DownloadErrorMessage => "O download não pôde ser concluído. Por favor, tente mais tarde. Se o problema persistir, escreva em #bugs-launcher no Discord.";
+    public string DownloadErrorMessage => "O download não pôde ser concluído. Por favor, tente mais tarde. Se o problema persistir, escreva em #testeo-launcher no Discord.";
     public string DownloadPermissionDeniedTitle => "Permissões insuficientes";
     public string DownloadPermissionDeniedMessage => "O launcher não tem permissão para instalar o jogo no caminho de download escolhido. Tente mudar para outro caminho em Configurações.";
     public string BtnCancel => "Cancelar";
@@ -686,7 +686,7 @@ public class Por : IStrings
     public string GameExeNotFoundTitle => "Jogo não encontrado";
     public string GameExeNotFoundMessage => "O executável do jogo não foi encontrado. Tente reinstalá-lo.";
     public string HashMismatchTitle => "Erro de integridade";
-    public string HashMismatchMessage => "O arquivo baixado está corrompido ou foi modificado. Por favor, tente novamente. Se o problema persistir, escreva em #bugs-launcher no Discord.";
+    public string HashMismatchMessage => "O arquivo baixado está corrompido ou foi modificado. Por favor, tente novamente. Se o problema persistir, escreva em #testeo-launcher no Discord.";
     public string WelcomeDialogTitle => "Bem-vindo ao Lostie Launcher!";
     public string WelcomeDialogDescription => "Baixe, atualize e jogue seus jogos favoritos em um único lugar. Simples, rápido e sem complicações.\n\nSua privacidade é importante. Não coletamos nenhum tipo de informação ou dado.\n\nEste projeto é open source. Dúvidas sobre como funciona? Consulte o código-fonte";
     public string WelcomeDialogContinue => "Continuar";
@@ -775,7 +775,7 @@ public class Val : IStrings
     public string DownloadKeyInvalidTitle => "Clau no vàlida";
     public string DownloadKeyInvalidMessage => "El format de la clau no és vàlid. Ha de tindre el format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Ha fallat la descàrrega";
-    public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #bugs-launcher en Discord.";
+    public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #testeo-launcher en Discord.";
     public string DownloadPermissionDeniedTitle => "Permisos insuficients";
     public string DownloadPermissionDeniedMessage => "El launcher no té permisos per a instal·lar el joc en la ruta de descàrrega triada. Prova a canviar a una altra ruta en Ajustos.";
     public string BtnCancel => "Cancel·lar";
@@ -787,7 +787,7 @@ public class Val : IStrings
     public string GameExeNotFoundTitle => "Joc no trobat";
     public string GameExeNotFoundMessage => "No s'ha trobat l'executable del joc. Prova a reinstal·lar-lo.";
     public string HashMismatchTitle => "Error d'integritat";
-    public string HashMismatchMessage => "El fitxer descarregat està danyat o ha sigut modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #bugs-launcher a Discord.";
+    public string HashMismatchMessage => "El fitxer descarregat està danyat o ha sigut modificat. Si us plau, intenta-ho de nou. Si el problema persisteix, escriu a #testeo-launcher a Discord.";
     public string WelcomeDialogTitle => "Benvingut al Lostie Launcher!";
     public string WelcomeDialogDescription => "Descarrega, actualitza i juga els teus jocs favorits en un sol lloc. Simple, ràpid i sense complicacions.\n\nLa teva privacitat és important. No recollim cap tipus d'informació ni de dades.\n\nEst projecte és opensource. Dubtes sobre com funciona? Consulta el codi font";
     public string WelcomeDialogContinue => "Continuar";
@@ -876,7 +876,7 @@ public class Fra : IStrings
     public string DownloadKeyInvalidTitle => "Clé invalide";
     public string DownloadKeyInvalidMessage => "Le format de la clé est invalide. Il doit suivre le format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Échec du téléchargement";
-    public string DownloadErrorMessage => "Le téléchargement n'a pas pu être complété. Veuillez réessayer plus tard. Si le problème persiste, écrivez dans #bugs-launcher sur Discord.";
+    public string DownloadErrorMessage => "Le téléchargement n'a pas pu être complété. Veuillez réessayer plus tard. Si le problème persiste, écrivez dans #testeo-launcher sur Discord.";
     public string DownloadPermissionDeniedTitle => "Permissions insuffisantes";
     public string DownloadPermissionDeniedMessage => "Le launcher n'a pas la permission d'installer le jeu dans le chemin de téléchargement choisi. Essayez de changer de chemin dans les Paramètres.";
     public string BtnCancel => "Annuler";
@@ -888,7 +888,7 @@ public class Fra : IStrings
     public string GameExeNotFoundTitle => "Jeu non trouvé";
     public string GameExeNotFoundMessage => "L'exécutable du jeu est introuvable. Essayez de le réinstaller.";
     public string HashMismatchTitle => "Erreur d'intégrité";
-    public string HashMismatchMessage => "Le fichier téléchargé est corrompu ou a été modifié. Veuillez réessayer. Si le problème persiste, écrivez dans #bugs-launcher sur Discord.";
+    public string HashMismatchMessage => "Le fichier téléchargé est corrompu ou a été modifié. Veuillez réessayer. Si le problème persiste, écrivez dans #testeo-launcher sur Discord.";
     public string WelcomeDialogTitle => "Bienvenue dans Lostie Launcher !";
     public string WelcomeDialogDescription => "Téléchargez, mettez à jour et jouez à vos jeux préférés en un seul endroit. Simple, rapide et sans tracas.\n\nVotre vie privée compte. Nous ne collectons aucune information ni donnée d'aucune sorte.\n\nCe projet est open source. Des questions sur le fonctionnement ? Consultez le code source";
     public string WelcomeDialogContinue => "Continuer";
