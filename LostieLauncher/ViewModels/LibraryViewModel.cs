@@ -338,6 +338,9 @@ public partial class LibraryViewModel : ObservableObject
                 case DownloadOutcome.Failed:
                     HandleDownloadFailed(game, session, result.ErrorMessage);
                     break;
+                case DownloadOutcome.PermissionDenied:
+                    HandleDownloadPermissionDenied(game, session);
+                    break;
             }
         }
         finally
@@ -528,6 +531,14 @@ public partial class LibraryViewModel : ObservableObject
         Logs.ErrorLogManager($"Download failed: {session.Args.GameId}: {errorMessage}");
         ResetDownloadState(game, session);
         CustomMessageBox.Show(strings.DownloadErrorTitle, strings.DownloadErrorMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
+    }
+
+    private void HandleDownloadPermissionDenied(GameInfo game, DownloadSession session)
+    {
+        var strings = SettingsViewModel.Instance.Strings;
+        Logs.ErrorLogManager($"Download failed due to insufficient permissions on the download path: {session.Args.GameId}.");
+        ResetDownloadState(game, session);
+        CustomMessageBox.Show(strings.DownloadPermissionDeniedTitle, strings.DownloadPermissionDeniedMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
     }
 
     private void ResetDownloadState(GameInfo game, DownloadSession session)

@@ -6,7 +6,8 @@ public enum DownloadOutcome
 {
     Success,
     Cancelled,
-    Failed
+    Failed,
+    PermissionDenied
 }
 
 public class DownloadResult
@@ -19,4 +20,6 @@ public class DownloadResult
     public static DownloadResult Cancelled() => new() { Outcome = DownloadOutcome.Cancelled };
 
     public static DownloadResult Failed(string message) => new() { Outcome = DownloadOutcome.Failed, ErrorMessage = message };
+
+    public static DownloadResult PermissionDenied() => new() { Outcome = DownloadOutcome.PermissionDenied };
 }

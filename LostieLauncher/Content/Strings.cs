@@ -69,6 +69,8 @@ public interface IStrings
     public string DownloadKeyInvalidMessage { get; }
     public string DownloadErrorTitle { get; }
     public string DownloadErrorMessage { get; }
+    public string DownloadPermissionDeniedTitle { get; }
+    public string DownloadPermissionDeniedMessage { get; }
     public string BtnCancel { get; }
     public string CancelDownloadConfirmTitle { get; }
     public string CancelDownloadConfirmMessage { get; }
@@ -168,6 +170,8 @@ public class Esp : IStrings
     public string DownloadKeyInvalidMessage => "El formato de la clave no es válido. Debe seguir el formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Error en la descarga";
     public string DownloadErrorMessage => "No se pudo completar la descarga. Por favor, intenta más tarde. Si el problema persiste, escribe en #bugs-launcher en Discord.";
+    public string DownloadPermissionDeniedTitle => "Permisos insuficientes";
+    public string DownloadPermissionDeniedMessage => "El launcher no tiene permisos para instalar el juego en la ruta de descarga elegida. Prueba a cambiar a otra ruta en Ajustes.";
     public string BtnCancel => "Cancelar";
     public string CancelDownloadConfirmTitle => "Cancelar descarga";
     public string CancelDownloadConfirmMessage => "¿Seguro que quieres cancelar la descarga? Se eliminarán los archivos parcialmente descargados.";
@@ -267,6 +271,8 @@ public class Eng : IStrings
     public string DownloadKeyInvalidMessage => "The key format is invalid. It must follow the format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Download failed";
     public string DownloadErrorMessage => "The download could not be completed. Please try again later. If the problem persists, write in #bugs-launcher on Discord.";
+    public string DownloadPermissionDeniedTitle => "Insufficient permissions";
+    public string DownloadPermissionDeniedMessage => "The launcher doesn't have permission to install the game in the chosen download path. Try changing to a different path in Settings.";
     public string BtnCancel => "Cancel";
     public string CancelDownloadConfirmTitle => "Cancel download";
     public string CancelDownloadConfirmMessage => "Are you sure you want to cancel the download? Partially downloaded files will be deleted.";
@@ -366,6 +372,8 @@ public class Cat : IStrings
     public string DownloadKeyInvalidMessage => "El format de la clau no és vàlid. Ha de tenir el format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Ha fallat la descàrrega";
     public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #bugs-launcher en Discord.";
+    public string DownloadPermissionDeniedTitle => "Permisos insuficients";
+    public string DownloadPermissionDeniedMessage => "El launcher no té permisos per instal·lar el joc a la ruta de descàrrega triada. Prova a canviar a una altra ruta a Configuració.";
     public string BtnCancel => "Cancel·lar";
     public string CancelDownloadConfirmTitle => "Cancel·lar descàrrega";
     public string CancelDownloadConfirmMessage => "Estàs segur que vols cancel·lar la descàrrega? Els fitxers descarregats parcialment seran eliminats.";
@@ -465,6 +473,8 @@ public class Eus : IStrings
     public string DownloadKeyInvalidMessage => "Gakoaren formatua ez da baliozkoa. Formatua XXXX-XXXX-XXXX-XXXX-XXXX izan behar da.";
     public string DownloadErrorTitle => "Deskargetak huts egin du";
     public string DownloadErrorMessage => "Deskargetak ezin izan du osatu. Mesedez, geroago saiatu. Arazoa jarraitzen badu, idatzi #bugs-launcher kanalean Discord-en.";
+    public string DownloadPermissionDeniedTitle => "Baimen nahikorik ez";
+    public string DownloadPermissionDeniedMessage => "Launcher-ak ez du baimenik jokoa aukeratutako deskarga bidean instalatzeko. Saiatu Ezarpenetan beste bide bat aukeratzen.";
     public string BtnCancel => "Utzi";
     public string CancelDownloadConfirmTitle => "Deskarga utzi";
     public string CancelDownloadConfirmMessage => "Ziur zaude deskarga utzi nahi duzula? Partzialki deskargatutako fitxategiak ezabatuko dira.";
@@ -564,6 +574,8 @@ public class Gal : IStrings
     public string DownloadKeyInvalidMessage => "O formato da clave non é válido. Debe ter o formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Erro na descarga";
     public string DownloadErrorMessage => "Non foi posible completar a descarga. Inténtao de novo máis tarde. Se o problema persiste, escribe en #bugs-launcher en Discord.";
+    public string DownloadPermissionDeniedTitle => "Permisos insuficientes";
+    public string DownloadPermissionDeniedMessage => "O launcher non ten permisos para instalar o xogo na ruta de descarga elixida. Proba a cambiar a outra ruta en Axustes.";
     public string BtnCancel => "Cancelar";
     public string CancelDownloadConfirmTitle => "Cancelar descarga";
     public string CancelDownloadConfirmMessage => "Seguro que queres cancelar a descarga? Os ficheiros parcialmente descargados serán eliminados.";
@@ -663,6 +675,8 @@ public class Por : IStrings
     public string DownloadKeyInvalidMessage => "O formato da chave é inválido. Deve seguir o formato XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Falha no download";
     public string DownloadErrorMessage => "O download não pôde ser concluído. Por favor, tente mais tarde. Se o problema persistir, escreva em #bugs-launcher no Discord.";
+    public string DownloadPermissionDeniedTitle => "Permissões insuficientes";
+    public string DownloadPermissionDeniedMessage => "O launcher não tem permissão para instalar o jogo no caminho de download escolhido. Tente mudar para outro caminho em Configurações.";
     public string BtnCancel => "Cancelar";
     public string CancelDownloadConfirmTitle => "Cancelar download";
     public string CancelDownloadConfirmMessage => "Tem certeza que deseja cancelar o download? Os arquivos parcialmente baixados serão excluídos.";
@@ -762,6 +776,8 @@ public class Val : IStrings
     public string DownloadKeyInvalidMessage => "El format de la clau no és vàlid. Ha de tindre el format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Ha fallat la descàrrega";
     public string DownloadErrorMessage => "No s'ha pogut completar la descàrrega. Si us plau, intenta-ho més tard. Si el problema persiste, escriu a #bugs-launcher en Discord.";
+    public string DownloadPermissionDeniedTitle => "Permisos insuficients";
+    public string DownloadPermissionDeniedMessage => "El launcher no té permisos per a instal·lar el joc en la ruta de descàrrega triada. Prova a canviar a una altra ruta en Ajustos.";
     public string BtnCancel => "Cancel·lar";
     public string CancelDownloadConfirmTitle => "Cancel·lar descàrrega";
     public string CancelDownloadConfirmMessage => "Estàs segur que vols cancel·lar la descàrrega? Els fitxers descarregats parcialment seran eliminats.";
@@ -861,6 +877,8 @@ public class Fra : IStrings
     public string DownloadKeyInvalidMessage => "Le format de la clé est invalide. Il doit suivre le format XXXX-XXXX-XXXX-XXXX-XXXX.";
     public string DownloadErrorTitle => "Échec du téléchargement";
     public string DownloadErrorMessage => "Le téléchargement n'a pas pu être complété. Veuillez réessayer plus tard. Si le problème persiste, écrivez dans #bugs-launcher sur Discord.";
+    public string DownloadPermissionDeniedTitle => "Permissions insuffisantes";
+    public string DownloadPermissionDeniedMessage => "Le launcher n'a pas la permission d'installer le jeu dans le chemin de téléchargement choisi. Essayez de changer de chemin dans les Paramètres.";
     public string BtnCancel => "Annuler";
     public string CancelDownloadConfirmTitle => "Annuler le téléchargement";
     public string CancelDownloadConfirmMessage => "Êtes-vous sûr de vouloir annuler le téléchargement ? Les fichiers partiellement téléchargés seront supprimés.";

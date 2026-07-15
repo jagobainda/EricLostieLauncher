@@ -216,6 +216,30 @@ public class DownloadServiceTests : IDisposable
         result.ErrorMessage.ShouldBe("Download failed after maximum retries.");
     }
 
+    [Fact]
+    public async Task DownloadAsync_WhenFinalizingFileIsDeniedByPermissions_ReturnsPermissionDeniedOutcome()
+    {
+        // Arrange — the transfer itself succeeds, but finalizing the file fails with a permissions
+        // error (reproduced here by making the destination path an existing directory, which makes
+        // the File.Move in the stack trace fail with UnauthorizedAccessException). This is the
+        // scenario users hit when the chosen download path isn't writable by the launcher.
+        _httpFactory.HandlerFor("Download").Respond(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("payload", Encoding.UTF8, "application/octet-stream")
+        });
+        var dest = Path.Combine(_temp.Path, "occupied");
+        Directory.CreateDirectory(dest);
+        var sut = CreateSut();
+
+        // Act
+        var result = await sut.DownloadAsync("https://download.test/file", dest);
+
+        // Assert — surfaced as its own outcome (not a generic Failure) so the UI can tell the user
+        // to pick a different download path in Settings instead of a "try again later" message.
+        result.Outcome.ShouldBe(DownloadOutcome.PermissionDenied);
+        result.ErrorMessage.ShouldBeNull();
+    }
+
     // -------------------- DownloadAsync: inactivity watchdog (BUG-013) --------------------
 
     [Fact]
