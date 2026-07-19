@@ -36,7 +36,7 @@
       Test framework: xUnit v3 (xunit 2.x is now in maintenance-only mode).
       The xunit.v3 metapackage transitively pulls xunit.v3.core and xunit.v3.assert.
     -->
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -54,8 +54,8 @@
     <PackageReference Include="Shouldly" Version="4.3.0" />
 
     <!-- DI helpers (the production project uses Microsoft.Extensions.DI). -->
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
 
     <!-- Coverage -->
     <PackageReference Include="coverlet.collector" Version="10.0.1">
