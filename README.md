@@ -13,7 +13,7 @@
 
 **Modern game launcher for Windows**
 
-[![Version](https://img.shields.io/badge/version-0.9.0-blue?style=flat-square)](releases/) [![Platform](https://img.shields.io/badge/platform-Windows-0078D4?style=flat-square&logo=windows)](https://microsoft.com/windows) [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/) [![WPF](https://img.shields.io/badge/UI-WPF-68217A?style=flat-square)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/) [![Velopack](https://img.shields.io/badge/updates-Velopack-FFE084?style=flat-square)](https://velopack.io/) [![License](https://img.shields.io/badge/license-see%20LICENSE-lightgrey?style=flat-square)](LICENSE.txt)
+[![Version](https://img.shields.io/badge/version-0.9.1-blue?style=flat-square)](releases/) [![Platform](https://img.shields.io/badge/platform-Windows-0078D4?style=flat-square&logo=windows)](https://microsoft.com/windows) [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/) [![WPF](https://img.shields.io/badge/UI-WPF-68217A?style=flat-square)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/) [![Velopack](https://img.shields.io/badge/updates-Velopack-FFE084?style=flat-square)](https://velopack.io/) [![License](https://img.shields.io/badge/license-see%20LICENSE-lightgrey?style=flat-square)](LICENSE.txt)
 
 Discover, download, install, and manage your games from a clean interface with multi-language support.
 
@@ -31,6 +31,7 @@ Discover, download, install, and manage your games from a clean interface with m
 | 🕹️ **My games**               | Dedicated view with installed games, version tracking and playtime                      |
 | 🔄 **Automatic updates**      | Delta updates with [Velopack](https://velopack.io/) — the launcher updates itself       |
 | 📰 **News and notifications** | News feed and announcements from the home screen                                        |
+| ❓ **FAQs**                   | Searchable frequently-asked-questions view with localized, collapsible entries           |
 | 🎨 **Themes**                 | 10 swappable visual themes: **Volcarona**, **Zoroark**, **Infernape**, **Torterra**, **Empoleon**, **Mewtwo**, **Cefireon**, **Sylveon**, **Astrem**, and **Auretoskos** |
 | 🌍 **Multi-language**         | 8 available languages with full UI translations                                         |
 | 💾 **Save shortcut**          | Quick-access button to open the save folder of an installed game                        |
@@ -62,9 +63,9 @@ LostieLauncher/
 ├── Services/           # Service layer
 ├── ViewModels/         # ViewModels with CommunityToolkit.Mvvm
 ├── Views/              # Windows, dialogs and WPF components
-│   ├── Components/     # GameCard, NewsCard, NotificationCard
+│   ├── Components/     # GameCard, NewsCard, NotificationCard, FaqCard (+ skeletons)
 │   ├── Dialogs/        # DownloadConfirmDialog, WelcomeDialog, CustomMessageBox, SpecialVersionDialog
-│   └── Partials/       # GamesView, HomeView, LibraryView, SettingsView
+│   └── Partials/       # GamesView, HomeView, LibraryView, FaqsView, SettingsView
 ├── Converters/         # XAML value converters
 ├── Styles/             # Global styles
 ├── Themes/             # Theme resources
@@ -93,6 +94,7 @@ LostieLauncher/
 | `HomeViewModel`     | Home screen with news and notifications        |
 | `LibraryViewModel`  | Available game catalog and download management |
 | `GamesViewModel`    | Installed games                                |
+| `FaqsViewModel`     | Searchable FAQ list                            |
 | `SettingsViewModel` | Settings panel                                 |
 | `GlobalViewModel`   | Shared global state                            |
 
@@ -135,7 +137,7 @@ dotnet build
 
 Artifacts are generated in `releases/`:
 
-- `LostieLauncher-0.9.0-full.nupkg` — initial installation package
+- `LostieLauncher-0.9.1-full.nupkg` — initial installation package
 - Delta packages (on successive builds)
 - `releases.win.json` — update manifest
 - `RELEASES` — Velopack metadata
