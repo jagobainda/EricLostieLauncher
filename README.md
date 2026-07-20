@@ -21,6 +21,11 @@ Discover, download, install, and manage your games from a clean interface with m
 
 ---
 
+> [!TIP]
+> **Thinking about contributing?** Read the [contribution guide](CONTRIBUTING.md) first.
+
+---
+
 ## ✨ Features
 
 | Feature                       | Description                                                                             |
