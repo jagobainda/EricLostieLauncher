@@ -6,7 +6,7 @@
 </div>
 
 <p align="center">
-  <a href="https://ericlostie-launcher.jagoba.dev/public/installer/LostieLauncher-win-Setup.exe">
+  <a href="https://lostielauncher.jagoba.dev/">
     <img src="https://img.shields.io/badge/Download%20Installer-Lostie%20Launcher-blue?style=for-the-badge" alt="Download Lostie Launcher" />
   </a>
 </p>
@@ -111,9 +111,9 @@ LostieLauncher/
 | ------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------- |
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet)                                                 | 8.4.2    | MVVM with `ObservableProperty` and `RelayCommand` |
 | [MahApps.Metro.IconPacks](https://github.com/MahApps/MahApps.Metro.IconPacks)                                       | 6.2.1    | Vector icons in the UI                            |
-| [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection) | 10.0.9   | IoC container                                     |
-| [Microsoft.Extensions.Http](https://www.nuget.org/packages/Microsoft.Extensions.Http)                               | 10.0.9   | `IHttpClientFactory` with named clients           |
-| [SharpCompress](https://github.com/adamhathcock/sharpcompress)                                                      | 0.49.1   | ZIP/7z extraction of downloaded files             |
+| [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection) | 10.0.10  | IoC container                                     |
+| [Microsoft.Extensions.Http](https://www.nuget.org/packages/Microsoft.Extensions.Http)                               | 10.0.10  | `IHttpClientFactory` with named clients           |
+| [SharpCompress](https://github.com/adamhathcock/sharpcompress)                                                      | 0.50.0   | ZIP/7z extraction of downloaded files             |
 | [Velopack](https://velopack.io/)                                                                                    | 0.0.1298 | Automatic delta update system                     |
 
 ---
