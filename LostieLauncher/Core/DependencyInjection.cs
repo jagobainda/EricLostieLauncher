@@ -15,6 +15,17 @@ public static class DependencyInjection
     private const string DownloadBaseUrl = $"{Endpoints.CdnBaseUrl}/games";
     private const string UpdateFeedUrl = $"{Endpoints.CdnBaseUrl}/public/installer/";
 
+    internal static readonly string UserAgent = $"LostieLauncher/{ResolveVersion()}";
+
+    private static string ResolveVersion()
+    {
+        var version = typeof(DependencyInjection).Assembly.GetName().Version;
+        if (version is null) return "unknown";
+
+        var availableFields = version.Revision >= 0 ? 4 : version.Build >= 0 ? 3 : 2;
+        return version.ToString(Math.Min(3, availableFields));
+    }
+
     public static IServiceProvider Configure()
     {
         var services = new ServiceCollection();
@@ -32,9 +43,21 @@ public static class DependencyInjection
         services.AddSingleton<IUpdateGateway, VelopackUpdateGateway>();
         services.AddSingleton<IUpdateNotifier, WpfUpdateNotifier>();
         services.AddSingleton<IUpdateService, UpdateService>();
-        services.AddHttpClient("Content", client => { client.Timeout = TimeSpan.FromSeconds(10); });
-        services.AddHttpClient("SecurityFlag", client => { client.Timeout = TimeSpan.FromSeconds(3); });
-        services.AddHttpClient("Download", client => { client.Timeout = Timeout.InfiniteTimeSpan; })
+        services.AddHttpClient("Content", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(10);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+        });
+        services.AddHttpClient("SecurityFlag", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(3);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+        });
+        services.AddHttpClient("Download", client =>
+        {
+            client.Timeout = Timeout.InfiniteTimeSpan;
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+        })
             .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromSeconds(20) });
 
         // ViewModels
