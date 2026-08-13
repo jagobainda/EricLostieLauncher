@@ -14,10 +14,17 @@ the architecture section of the [README](README.md).
 
 1. **Fork** the repository.
 2. Always branch off **`development`**, not `main`.
-3. Create a descriptive branch for your change, using the `development_` prefix:
-   `development_<description>`.
-4. Make your commits.
-5. Open a **Pull Request against `development`**. Merging into `main` is reserved
+3. Create a descriptive branch for your change using the
+   `<type>/<short-english-description>` format. Use the most specific type:
+   `feat/` for features, `fix/` for bug fixes, `security/` for vulnerability
+   fixes, `chore/` for maintenance, `docs/` for documentation, `refactor/` for
+   restructuring, `perf/` for performance improvements, `test/` for tests only,
+   `ci/` for CI/CD changes, and `build/` for build or packaging changes.
+4. Write the description in concise English, using lowercase kebab-case with
+   only letters, numbers, and hyphens. For example:
+   `fix/login-crash-empty-password`.
+5. Make your commits.
+6. Open a **Pull Request against `development`**. Merging into `main` is reserved
    for releases.
 
 `main` is the stable release branch; `development` is the integration branch

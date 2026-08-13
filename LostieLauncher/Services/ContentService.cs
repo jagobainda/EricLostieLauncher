@@ -333,7 +333,7 @@ public class ContentService(IHttpClientFactory httpClientFactory, ContentOptions
         await LocalGamesFileLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            Logs.DebugLogManager($"Registering game in local registry: {gameName} v{version}{(tipo is not null ? $" ({tipo})" : "")}.");
+            Logs.DebugLogManager($"Registering game in local registry: {gameName} {VersionUtils.FormatDisplayVersion(version)}{(tipo is not null ? $" ({tipo})" : "")}.");
             var gamesRoot = _settingsService.GetGamesRootDirectory();
             Directory.CreateDirectory(gamesRoot);
             var path = Path.Combine(gamesRoot, LocalGamesFileName);
@@ -349,7 +349,7 @@ public class ContentService(IHttpClientFactory httpClientFactory, ContentOptions
             games.Add(new LocalGameInfo { Id = gameId, Nombre = gameName, Version = version, Tipo = tipo });
 
             await WriteAllTextAtomicAsync(path, JsonSerializer.Serialize(games, JsonOptions)).ConfigureAwait(false);
-            Logs.InfoLogManager($"Game registered in local registry: {gameName} v{version}{(tipo is not null ? $" ({tipo})" : "")}.");
+            Logs.InfoLogManager($"Game registered in local registry: {gameName} {VersionUtils.FormatDisplayVersion(version)}{(tipo is not null ? $" ({tipo})" : "")}.");
         }
         catch (Exception ex) { Logs.ErrorLogManager(ex); }
         finally { LocalGamesFileLock.Release(); }

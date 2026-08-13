@@ -70,7 +70,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
                 InstalledGames.Add(info);
             });
 
-            Logs.DebugLogManager($"Games list updated after install: {gameName} v{version}{(tipo is not null ? $" ({tipo})" : "")}.");
+            Logs.DebugLogManager($"Games list updated after install: {gameName} {VersionUtils.FormatDisplayVersion(version)}{(tipo is not null ? $" ({tipo})" : "")}.");
         }
         catch (Exception ex)
         {
