@@ -309,7 +309,7 @@ public partial class LibraryViewModel : ObservableObject
 
         try
         {
-            Logs.DebugLogManager($"Executing download/install: {session.Args.GameId} v{session.Args.Version}.");
+            Logs.DebugLogManager($"Executing download/install: {session.Args.GameId} {session.Args.Version}.");
             session.IsCancelling = false;
             session.Cts?.Dispose();
             session.Cts = new CancellationTokenSource();
@@ -324,7 +324,7 @@ public partial class LibraryViewModel : ObservableObject
             });
 
             var isSpecial = session.SpecialConfig is not null;
-            Logs.InfoLogManager($"Downloading: {session.Args.GameId} v{session.Args.Version}{(isSpecial ? $" (special: {session.SpecialConfig!.Tipo})" : "")}.");
+            Logs.InfoLogManager($"Downloading: {session.Args.GameId} {session.Args.Version}{(isSpecial ? $" (special: {session.SpecialConfig!.Tipo})" : "")}.");
             var result = await _downloadService.DownloadAsync(session.Url, session.ZipPath, progress, session.Cts.Token);
 
             switch (result.Outcome)
