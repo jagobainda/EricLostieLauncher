@@ -124,4 +124,86 @@ public class VersionUtilsTests
         // Assert
         result.ShouldBeFalse();
     }
+
+    [Theory]
+    [InlineData("v4.0.3")]
+    [InlineData("V4.0.3")]
+    [InlineData("4.0.3")]
+    public void FormatDisplayVersion_EmitsExactlyOneVPrefixRegardlessOfSourcePrefix(string version)
+    {
+        // Arrange & Act — el catálogo remoto no normaliza el prefijo, así que las tres formas llegan.
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("v4.0.3");
+    }
+
+    [Fact]
+    public void FormatDisplayVersion_WhenSourceAlreadyCarriesPrefix_DoesNotDuplicateIt()
+    {
+        // Arrange — Regresión del issue #29: los logs imprimían "vv2.18.0" al prefijar a mano una
+        // versión de catálogo que ya traía la "v".
+        var version = "v2.18.0";
+
+        // Act
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("v2.18.0");
+        result.ShouldNotStartWith("vv");
+    }
+
+    [Fact]
+    public void FormatDisplayVersion_CollapsesAnAlreadyDuplicatedPrefix()
+    {
+        // Arrange — Defensivo: si el contenido remoto llegara a publicar "vv2.18.0" el log no debe
+        // arrastrar la duplicación.
+        var version = "vv2.18.0";
+
+        // Act
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("v2.18.0");
+    }
+
+    [Fact]
+    public void FormatDisplayVersion_PreservesPreReleaseSuffix()
+    {
+        // Arrange — A diferencia de ParseBaseVersion, el formateo es para mostrar: no recorta el sufijo.
+        var version = "v1.2.0-beta";
+
+        // Act
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("v1.2.0-beta");
+    }
+
+    [Fact]
+    public void FormatDisplayVersion_TrimsSurroundingWhitespace()
+    {
+        // Arrange — La config de versión especial es texto plano parseado a mano (clave=valor).
+        var version = "  v2.11.0  ";
+
+        // Act
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("v2.11.0");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("v")]
+    public void FormatDisplayVersion_WhenThereIsNoVersionToShow_ReturnsUnknownInsteadOfALoneV(string? version)
+    {
+        // Arrange & Act — sin este caso el log quedaría como "Downloading: <game> v." sin información.
+        var result = VersionUtils.FormatDisplayVersion(version);
+
+        // Assert
+        result.ShouldBe("unknown");
+    }
 }

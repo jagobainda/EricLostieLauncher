@@ -63,7 +63,7 @@ public class DownloadService : IDownloadService
                 return SpecialVersionConfigResult.InvalidResponse();
             }
 
-            Logs.InfoLogManager($"Special version config loaded: {config.Tipo} v{config.Version}");
+            Logs.InfoLogManager($"Special version config loaded: {config.Tipo} {VersionUtils.FormatDisplayVersion(config.Version)}");
             return SpecialVersionConfigResult.Success(config);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)

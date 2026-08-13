@@ -267,7 +267,7 @@ public partial class LibraryViewModel : ObservableObject
         var url = $"{_downloadOptions.BaseUrl}/{key}/{config.Archivo}";
         var session = CreateSession(game, switchArgs, url, config, isUpdate: true);
 
-        Logs.DebugLogManager($"Starting special version switch session for {args.GameId} ({config.Tipo} v{config.Version}).");
+        Logs.DebugLogManager($"Starting special version switch session for {args.GameId} ({config.Tipo} {VersionUtils.FormatDisplayVersion(config.Version)}).");
         PendingScrollGameId = args.GameId;
         ScrollToGameRequested?.Invoke(args.GameId);
         await ExecuteDownloadAndInstallAsync(game, session);
@@ -309,7 +309,7 @@ public partial class LibraryViewModel : ObservableObject
 
         try
         {
-            Logs.DebugLogManager($"Executing download/install: {session.Args.GameId} v{session.Args.Version}.");
+            Logs.DebugLogManager($"Executing download/install: {session.Args.GameId} {VersionUtils.FormatDisplayVersion(session.Args.Version)}.");
             session.IsCancelling = false;
             session.Cts?.Dispose();
             session.Cts = new CancellationTokenSource();
@@ -324,7 +324,7 @@ public partial class LibraryViewModel : ObservableObject
             });
 
             var isSpecial = session.SpecialConfig is not null;
-            Logs.InfoLogManager($"Downloading: {session.Args.GameId} v{session.Args.Version}{(isSpecial ? $" (special: {session.SpecialConfig!.Tipo})" : "")}.");
+            Logs.InfoLogManager($"Downloading: {session.Args.GameId} {VersionUtils.FormatDisplayVersion(session.Args.Version)}{(isSpecial ? $" (special: {session.SpecialConfig!.Tipo})" : "")}.");
             var result = await _downloadService.DownloadAsync(session.Url, session.ZipPath, progress, session.Cts.Token);
 
             switch (result.Outcome)
@@ -408,7 +408,7 @@ public partial class LibraryViewModel : ObservableObject
             game.DownloadStatus = GameDownloadStatus.Downloaded;
             game.DownloadProgressValue = 100;
             RemoveSession(session);
-            Logs.InfoLogManager($"Game installed: {session.Args.GameId} v{session.Args.Version}{(tipo is not null ? $" ({tipo})" : "")}.");
+            Logs.InfoLogManager($"Game installed: {session.Args.GameId} {VersionUtils.FormatDisplayVersion(session.Args.Version)}{(tipo is not null ? $" ({tipo})" : "")}.");
             GameInstalled?.Invoke(game.Nombre, session.Args.Version, tipo);
         }
         catch (Exception ex)
