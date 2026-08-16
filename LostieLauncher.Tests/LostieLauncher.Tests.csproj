@@ -14,8 +14,9 @@
 
     <!--
       xUnit v3 ships tests as a standalone executable instead of a class library.
-      OutputType=Exe is mandatory for the v3 runner; Microsoft.NET.Test.Sdk 18.x plus
-      xunit.runner.visualstudio 3.x still let `dotnet test` discover and run them.
+      OutputType=Exe is mandatory for the v3 runner. Since xunit.v3 4.x the tests run on
+      Microsoft.Testing.Platform: the .NET 10 SDK dropped the VSTest bridge, so `dotnet test`
+      only discovers them because global.json opts this repo into the MTP test runner.
     -->
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
