@@ -30,7 +30,7 @@ public class GamesViewModelTests
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library);
+        var sut = new GamesViewModel(_contentService, library, _globalViewModel);
         // Wait for the constructor's fire-and-forget LoadInstalledGamesAsync to finish.
         await sut.RefreshAsync();
         return sut;
@@ -264,7 +264,7 @@ public class GamesViewModelTests
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library);
+        var sut = new GamesViewModel(_contentService, library, _globalViewModel);
         await sut.RefreshAsync();
         GetGameInstalledSubscriberCount(library).ShouldBe(1);
 

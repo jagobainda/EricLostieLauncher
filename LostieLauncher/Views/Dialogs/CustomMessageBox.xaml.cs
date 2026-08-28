@@ -59,7 +59,15 @@ public partial class CustomMessageBox : Window
 
         var candidateOwner = owner ?? Application.Current.MainWindow;
 
-        if (candidateOwner?.IsLoaded == true) dialog.Owner = candidateOwner;
+        if (candidateOwner is { IsLoaded: true, IsVisible: true })
+        {
+            dialog.Owner = candidateOwner;
+        }
+        else
+        {
+            dialog.Topmost = true;
+            dialog.Loaded += (_, _) => dialog.Activate();
+        }
 
         return dialog.ShowDialog();
     }

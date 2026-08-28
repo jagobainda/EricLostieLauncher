@@ -14,6 +14,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
 {
     private readonly IContentService _contentService;
     private readonly LibraryViewModel _libraryViewModel;
+    private readonly GlobalViewModel _globalViewModel;
     private const string HelpFolderName = "ayuda";
     private bool _disposed;
 
@@ -32,10 +33,11 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     public bool IsEmpty => !IsLoading && InstalledGames.Count == 0;
     public bool IsListVisible => !IsLoading && InstalledGames.Count > 0;
 
-    public GamesViewModel(IContentService contentService, LibraryViewModel libraryViewModel)
+    public GamesViewModel(IContentService contentService, LibraryViewModel libraryViewModel, GlobalViewModel globalViewModel)
     {
         _contentService = contentService;
         _libraryViewModel = libraryViewModel;
+        _globalViewModel = globalViewModel;
         _libraryViewModel.GameInstalled += OnGameInstalled;
         _ = LoadInstalledGamesAsync(waitForLibrary: true);
     }
@@ -221,22 +223,40 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             : Task.CompletedTask;
 
         var exitHandler = AsyncEventHandler.Wrap((_, _) => RunOnce());
-        process.Exited += exitHandler;
-        process.EnableRaisingEvents = true;
-        Logs.DebugLogManager($"Tracking play session for: {gameName}.");
 
-        if (process.HasExited) exitHandler.Invoke(process, EventArgs.Empty);
+        _globalViewModel.BeginPlaySession();
+
+        try
+        {
+            process.Exited += exitHandler;
+            process.EnableRaisingEvents = true;
+            Logs.DebugLogManager($"Tracking play session for: {gameName}.");
+
+            if (process.HasExited) exitHandler.Invoke(process, EventArgs.Empty);
+        }
+        catch (Exception)
+        {
+            exitHandler.Invoke(process, EventArgs.Empty);
+            throw;
+        }
     }
 
     private async Task OnGameExitedAsync(Process process, string gameName, Guid gameGuid, DateTime startTime)
     {
         using (process)
         {
-            var minutes = (int)(DateTime.UtcNow - startTime).TotalMinutes;
-            Logs.DebugLogManager($"Game process exited: {gameName}. Session: {minutes} min.");
+            try
+            {
+                var minutes = (int)(DateTime.UtcNow - startTime).TotalMinutes;
+                Logs.DebugLogManager($"Game process exited: {gameName}. Session: {minutes} min.");
 
-            await RecordPlaySessionAsync(gameGuid, minutes).ConfigureAwait(false);
-            ApplyPlaytimeAndRestoreWindow(gameName, minutes);
+                await RecordPlaySessionAsync(gameGuid, minutes).ConfigureAwait(false);
+                ApplyPlaytimeAndRestoreWindow(gameName, minutes);
+            }
+            finally
+            {
+                _globalViewModel.EndPlaySession();
+            }
         }
     }
 

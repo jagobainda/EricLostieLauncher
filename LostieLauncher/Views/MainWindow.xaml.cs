@@ -27,10 +27,16 @@ public partial class MainWindow : Window
         KeyboardShortcuts.Bind(this, Key.Escape, ModifierKeys.None, MinimizeToTray);
 
         KeyboardShortcuts.Bind(this, Key.M, ModifierKeys.Control, () => WindowState = WindowState.Minimized);
-        KeyboardShortcuts.Bind(this, Key.Q, ModifierKeys.Control | ModifierKeys.Shift, Application.Current.Shutdown);
+        KeyboardShortcuts.Bind(this, Key.Q, ModifierKeys.Control | ModifierKeys.Shift, RequestShutdown);
     }
 
     private void MinimizeToTray() => Hide();
+
+    private static void RequestShutdown()
+    {
+        if (Application.Current is App app) app.RequestShutdown();
+        else Application.Current?.Shutdown();
+    }
 
     protected override void OnClosing(CancelEventArgs e)
     {
