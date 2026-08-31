@@ -215,7 +215,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         catch (Exception ex) { Logs.ErrorLogManager(ex); }
     }
 
-    private void TrackPlaySession(Process process, string gameName, Guid gameGuid, DateTime startTime)
+    internal void TrackPlaySession(Process process, string gameName, Guid gameGuid, DateTime startTime)
     {
         var handled = 0;
         Task RunOnce() => Interlocked.Exchange(ref handled, 1) == 0
@@ -236,7 +236,8 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         }
         catch (Exception)
         {
-            exitHandler.Invoke(process, EventArgs.Empty);
+            process.Exited -= exitHandler;
+            if (Interlocked.Exchange(ref handled, 1) == 0) _globalViewModel.EndPlaySession();
             throw;
         }
     }
@@ -273,20 +274,27 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             var app = Application.Current;
             if (app is null) return;
 
-            app.Dispatcher.Invoke(() =>
+            app.Dispatcher.BeginInvoke(() =>
             {
-                if (minutes > 0)
+                try
                 {
-                    var installedGame = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
-                    installedGame?.PlaytimeMinutes += minutes;
-                    var libraryGame = _libraryViewModel.Games.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
-                    libraryGame?.PlaytimeMinutes += minutes;
-                }
+                    if (minutes > 0)
+                    {
+                        var installedGame = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
+                        installedGame?.PlaytimeMinutes += minutes;
+                        var libraryGame = _libraryViewModel.Games.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
+                        libraryGame?.PlaytimeMinutes += minutes;
+                    }
 
-                if (app.MainWindow is { } mainWindow)
+                    if (app.MainWindow is { } mainWindow)
+                    {
+                        mainWindow.WindowState = WindowState.Normal;
+                        mainWindow.Activate();
+                    }
+                }
+                catch (Exception ex)
                 {
-                    mainWindow.WindowState = WindowState.Normal;
-                    mainWindow.Activate();
+                    Logs.ErrorLogManager(ex);
                 }
             });
         }

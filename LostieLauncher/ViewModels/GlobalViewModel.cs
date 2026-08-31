@@ -1,9 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Threading;
 
 namespace LostieLauncher.ViewModels;
 
 public partial class GlobalViewModel : ObservableObject
 {
+    private readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
+
     private int _activePlaySessions;
 
     [ObservableProperty]
@@ -16,7 +19,7 @@ public partial class GlobalViewModel : ObservableObject
 
     public bool IsBusy => IsDownloading || IsRefreshing;
 
-    public int ActivePlaySessions => Volatile.Read(ref _activePlaySessions);
+    internal int ActivePlaySessions => Volatile.Read(ref _activePlaySessions);
 
     public bool IsGameRunning => ActivePlaySessions > 0;
 
@@ -33,6 +36,17 @@ public partial class GlobalViewModel : ObservableObject
     }
 
     private void RaisePlaySessionsChanged()
+    {
+        if (_dispatcher.CheckAccess())
+        {
+            RaisePlaySessionsChangedCore();
+            return;
+        }
+
+        _dispatcher.BeginInvoke(RaisePlaySessionsChangedCore);
+    }
+
+    private void RaisePlaySessionsChangedCore()
     {
         OnPropertyChanged(nameof(ActivePlaySessions));
         OnPropertyChanged(nameof(IsGameRunning));

@@ -143,7 +143,8 @@ public partial class App : Application
         {
             ShutdownWarning.Both => strings.ExitWarningBothMessage,
             ShutdownWarning.Download => strings.ExitWarningDownloadMessage,
-            _ => strings.ExitWarningGameMessage
+            ShutdownWarning.Game => strings.ExitWarningGameMessage,
+            _ => throw new UnreachableException()
         };
 
         Logs.InfoLogManager($"Exit requested while busy ({warning}). Asking for confirmation.");
