@@ -52,6 +52,10 @@ public interface IStrings
     public string ChangeDownloadDirMessage { get; }
     public string TrayOpen { get; }
     public string TrayExit { get; }
+    public string ExitWarningTitle { get; }
+    public string ExitWarningDownloadMessage { get; }
+    public string ExitWarningGameMessage { get; }
+    public string ExitWarningBothMessage { get; }
     public string LibraryNoContent { get; }
     public string GamesNoContent { get; }
     public string GamesGoToLibrary { get; }
@@ -153,6 +157,10 @@ public class Esp : IStrings
     public string ChangeDownloadDirMessage => "Si tienes juegos instalados, tendrás que moverlos manualmente a la nueva ruta o el launcher no los reconocerá. ¿Deseas continuar?";
     public string TrayOpen => "Abrir";
     public string TrayExit => "Salir";
+    public string ExitWarningTitle => "Salir del launcher";
+    public string ExitWarningDownloadMessage => "Hay una descarga en curso. Si sales ahora se detendrá, pero podrás reanudarla la próxima vez que abras el launcher. ¿Seguro que quieres salir?";
+    public string ExitWarningGameMessage => "Tienes un juego abierto. Si sales ahora no se guardará el tiempo jugado de esta sesión. ¿Seguro que quieres salir?";
+    public string ExitWarningBothMessage => "Hay una descarga en curso y un juego abierto. La descarga se detendrá (podrás reanudarla más tarde) y no se guardará el tiempo jugado de esta sesión. ¿Seguro que quieres salir?";
     public string LibraryNoContent => "No disponible";
     public string GamesNoContent => "No tienes juegos instalados";
     public string GamesGoToLibrary => "Ir a la biblioteca";
@@ -254,6 +262,10 @@ public class Eng : IStrings
     public string ChangeDownloadDirMessage => "If you have installed games, you will need to move them manually to the new path or the launcher won't recognize them. Do you want to continue?";
     public string TrayOpen => "Open";
     public string TrayExit => "Exit";
+    public string ExitWarningTitle => "Exit the launcher";
+    public string ExitWarningDownloadMessage => "A download is in progress. If you exit now it will stop, but you can resume it the next time you open the launcher. Are you sure you want to exit?";
+    public string ExitWarningGameMessage => "You have a game open. If you exit now the playtime of this session will not be saved. Are you sure you want to exit?";
+    public string ExitWarningBothMessage => "A download is in progress and a game is open. The download will stop (you can resume it later) and the playtime of this session will not be saved. Are you sure you want to exit?";
     public string LibraryNoContent => "Not available";
     public string GamesNoContent => "No games installed";
     public string GamesGoToLibrary => "Go to Library";
@@ -355,6 +367,10 @@ public class Cat : IStrings
     public string ChangeDownloadDirMessage => "Si tens jocs instal·lats, hauràs de moure'ls manualment a la nova ruta o el launcher no els reconeixerà. Vols continuar?";
     public string TrayOpen => "Obrir";
     public string TrayExit => "Sortir";
+    public string ExitWarningTitle => "Sortir del launcher";
+    public string ExitWarningDownloadMessage => "Hi ha una descàrrega en curs. Si surts ara s'aturarà, però la podràs reprendre la propera vegada que obris el launcher. Estàs segur que vols sortir?";
+    public string ExitWarningGameMessage => "Tens un joc obert. Si surts ara no es desarà el temps jugat d'aquesta sessió. Estàs segur que vols sortir?";
+    public string ExitWarningBothMessage => "Hi ha una descàrrega en curs i un joc obert. La descàrrega s'aturarà (la podràs reprendre més tard) i no es desarà el temps jugat d'aquesta sessió. Estàs segur que vols sortir?";
     public string LibraryNoContent => "No disponible";
     public string GamesNoContent => "No tens cap joc instal·lat";
     public string GamesGoToLibrary => "Anar a la biblioteca";
@@ -456,6 +472,10 @@ public class Eus : IStrings
     public string ChangeDownloadDirMessage => "Jokoak instalatuta badituzu, eskuz mugitu beharko dituzu bide berrira, edo launcher-ak ez ditu ezagutuko. Jarraitu nahi duzu?";
     public string TrayOpen => "Ireki";
     public string TrayExit => "Irten";
+    public string ExitWarningTitle => "Launcherretik irten";
+    public string ExitWarningDownloadMessage => "Deskarga bat abian da. Orain irtenez gero geldituko da, baina launcherra hurrengoan irekitzean berrekin ahal izango diozu. Ziur zaude irten nahi duzula?";
+    public string ExitWarningGameMessage => "Joko bat irekita duzu. Orain irtenez gero, saio honetan jokatutako denbora ez da gordeko. Ziur zaude irten nahi duzula?";
+    public string ExitWarningBothMessage => "Deskarga bat abian da eta joko bat irekita duzu. Deskarga geldituko da (geroago berrekin ahal izango diozu) eta saio honetan jokatutako denbora ez da gordeko. Ziur zaude irten nahi duzula?";
     public string LibraryNoContent => "Ez dago eskuragarri";
     public string GamesNoContent => "Ez daukazu jokorik instalatuta";
     public string GamesGoToLibrary => "Liburutegira joan";
@@ -557,6 +577,10 @@ public class Gal : IStrings
     public string ChangeDownloadDirMessage => "Se tes xogos instalados, terás que movelos manualmente á nova ruta ou o launcher non os recoñecerá. Desexas continuar?";
     public string TrayOpen => "Abrir";
     public string TrayExit => "Saír";
+    public string ExitWarningTitle => "Saír do launcher";
+    public string ExitWarningDownloadMessage => "Hai unha descarga en curso. Se saes agora deterase, pero poderás retomala a próxima vez que abras o launcher. Seguro que queres saír?";
+    public string ExitWarningGameMessage => "Tes un xogo aberto. Se saes agora non se gardará o tempo xogado desta sesión. Seguro que queres saír?";
+    public string ExitWarningBothMessage => "Hai unha descarga en curso e un xogo aberto. A descarga deterase (poderás retomala máis tarde) e non se gardará o tempo xogado desta sesión. Seguro que queres saír?";
     public string LibraryNoContent => "Non dispoñible";
     public string GamesNoContent => "Non tes ningún xogo instalado";
     public string GamesGoToLibrary => "Ir á biblioteca";
@@ -658,6 +682,10 @@ public class Por : IStrings
     public string ChangeDownloadDirMessage => "Se você tiver jogos instalados, precisará movê-los manualmente para o novo caminho ou o launcher não os reconhecerá. Deseja continuar?";
     public string TrayOpen => "Abrir";
     public string TrayExit => "Sair";
+    public string ExitWarningTitle => "Sair do launcher";
+    public string ExitWarningDownloadMessage => "Há um download em andamento. Se sair agora ele será interrompido, mas poderá retomá-lo na próxima vez que abrir o launcher. Tem certeza que deseja sair?";
+    public string ExitWarningGameMessage => "Você tem um jogo aberto. Se sair agora o tempo jogado desta sessão não será salvo. Tem certeza que deseja sair?";
+    public string ExitWarningBothMessage => "Há um download em andamento e um jogo aberto. O download será interrompido (poderá retomá-lo mais tarde) e o tempo jogado desta sessão não será salvo. Tem certeza que deseja sair?";
     public string LibraryNoContent => "Não disponível";
     public string GamesNoContent => "Nenhum jogo instalado";
     public string GamesGoToLibrary => "Ir à biblioteca";
@@ -759,6 +787,10 @@ public class Val : IStrings
     public string ChangeDownloadDirMessage => "Si tens jocs instal·lats, hauràs de moure'ls manualment a la nova ruta o el launcher no els reconeixerà. Vols continuar?";
     public string TrayOpen => "Obrir";
     public string TrayExit => "Eixir";
+    public string ExitWarningTitle => "Eixir del launcher";
+    public string ExitWarningDownloadMessage => "Hi ha una descàrrega en curs. Si ixes ara s'aturarà, però la podràs reprendre la pròxima vegada que òbrigues el launcher. Estàs segur que vols eixir?";
+    public string ExitWarningGameMessage => "Tens un joc obert. Si ixes ara no es guardarà el temps jugat d'esta sessió. Estàs segur que vols eixir?";
+    public string ExitWarningBothMessage => "Hi ha una descàrrega en curs i un joc obert. La descàrrega s'aturarà (la podràs reprendre més tard) i no es guardarà el temps jugat d'esta sessió. Estàs segur que vols eixir?";
     public string LibraryNoContent => "No disponible";
     public string GamesNoContent => "No tens cap joc instal·lat";
     public string GamesGoToLibrary => "Anar a la biblioteca";
@@ -860,6 +892,10 @@ public class Fra : IStrings
     public string ChangeDownloadDirMessage => "Si vous avez des jeux installés, vous devrez les déplacer manuellement vers le nouveau chemin ou le lanceur ne les reconnaîtra pas. Voulez-vous continuer ?";
     public string TrayOpen => "Ouvrir";
     public string TrayExit => "Quitter";
+    public string ExitWarningTitle => "Quitter le launcher";
+    public string ExitWarningDownloadMessage => "Un téléchargement est en cours. Si vous quittez maintenant, il s'arrêtera, mais vous pourrez le reprendre à la prochaine ouverture du launcher. Êtes-vous sûr de vouloir quitter ?";
+    public string ExitWarningGameMessage => "Vous avez un jeu ouvert. Si vous quittez maintenant, le temps de jeu de cette session ne sera pas enregistré. Êtes-vous sûr de vouloir quitter ?";
+    public string ExitWarningBothMessage => "Un téléchargement est en cours et un jeu est ouvert. Le téléchargement s'arrêtera (vous pourrez le reprendre plus tard) et le temps de jeu de cette session ne sera pas enregistré. Êtes-vous sûr de vouloir quitter ?";
     public string LibraryNoContent => "Non disponible";
     public string GamesNoContent => "Aucun jeu installé";
     public string GamesGoToLibrary => "Aller à la bibliothèque";

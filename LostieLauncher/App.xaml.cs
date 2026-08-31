@@ -118,6 +118,39 @@ public partial class App : Application
         Shutdown();
     }
 
+    internal void RequestShutdown()
+    {
+        if (!ConfirmShutdown())
+        {
+            Logs.InfoLogManager("Shutdown cancelled by the user.");
+            return;
+        }
+
+        Logs.InfoLogManager("Shutdown requested by the user.");
+        Shutdown();
+    }
+
+    private static bool ConfirmShutdown()
+    {
+        var globalViewModel = Services?.GetService<GlobalViewModel>();
+        if (globalViewModel is null) return true;
+
+        var warning = ShutdownWarningPolicy.Decide(globalViewModel.IsDownloading, globalViewModel.IsGameRunning);
+        if (warning == ShutdownWarning.None) return true;
+
+        var strings = SettingsViewModel.Instance.Strings;
+        var message = warning switch
+        {
+            ShutdownWarning.Both => strings.ExitWarningBothMessage,
+            ShutdownWarning.Download => strings.ExitWarningDownloadMessage,
+            ShutdownWarning.Game => strings.ExitWarningGameMessage,
+            _ => throw new UnreachableException()
+        };
+
+        Logs.InfoLogManager($"Exit requested while busy ({warning}). Asking for confirmation.");
+        return CustomMessageBox.Show(strings.ExitWarningTitle, message, CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error) == true;
+    }
+
     private void InitializeTrayIcon()
     {
         _trayOpenItem = new ToolStripMenuItem();
@@ -126,7 +159,7 @@ public partial class App : Application
         UpdateTrayMenuText();
 
         _trayOpenItem.Click += (_, _) => RestoreMainWindow();
-        _trayExitItem.Click += (_, _) => Shutdown();
+        _trayExitItem.Click += (_, _) => RequestShutdown();
 
         var contextMenu = new ContextMenuStrip();
         contextMenu.Items.Add(_trayOpenItem);

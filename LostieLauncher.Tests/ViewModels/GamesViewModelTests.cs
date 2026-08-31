@@ -1,6 +1,7 @@
 using LostieLauncher.Models;
 using LostieLauncher.Services;
 using LostieLauncher.ViewModels;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace LostieLauncher.Tests.ViewModels;
@@ -30,7 +31,7 @@ public class GamesViewModelTests
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library);
+        var sut = new GamesViewModel(_contentService, library, _globalViewModel);
         // Wait for the constructor's fire-and-forget LoadInstalledGamesAsync to finish.
         await sut.RefreshAsync();
         return sut;
@@ -264,7 +265,7 @@ public class GamesViewModelTests
     {
         var library = CreateLibrary();
         await library.LibraryLoadedTask;
-        var sut = new GamesViewModel(_contentService, library);
+        var sut = new GamesViewModel(_contentService, library, _globalViewModel);
         await sut.RefreshAsync();
         GetGameInstalledSubscriberCount(library).ShouldBe(1);
 
@@ -348,5 +349,69 @@ public class GamesViewModelTests
         var field = typeof(LibraryViewModel).GetField("GameInstalled", BindingFlags.Instance | BindingFlags.NonPublic);
         var subscribers = field?.GetValue(library) as Delegate;
         return subscribers?.GetInvocationList().Length ?? 0;
+    }
+
+    [Fact]
+    public async Task TrackPlaySession_WhileTheGameIsRunning_MarksItAsRunning()
+    {
+        var vm = await CreateSutAsync();
+        using var process = StartBlockingProcess();
+
+        try
+        {
+            vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
+
+            _globalViewModel.ActivePlaySessions.ShouldBe(1);
+            _globalViewModel.IsGameRunning.ShouldBeTrue();
+        }
+        finally
+        {
+            process.Kill(entireProcessTree: true);
+        }
+    }
+
+    [Fact]
+    public async Task TrackPlaySession_WhenTheGameProcessExits_ClosesTheSession()
+    {
+        var vm = await CreateSutAsync();
+        using var process = StartBlockingProcess();
+        vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
+        _globalViewModel.IsGameRunning.ShouldBeTrue();
+
+        process.Kill(entireProcessTree: true);
+
+        await WaitUntilAsync(() => !_globalViewModel.IsGameRunning);
+        _globalViewModel.ActivePlaySessions.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task TrackPlaySession_WhenTheProcessHasAlreadyExited_DoesNotLeaveTheSessionOpen()
+    {
+        var vm = await CreateSutAsync();
+        using var process = StartBlockingProcess();
+        process.Kill(entireProcessTree: true);
+        await process.WaitForExitAsync();
+
+        vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
+
+        await WaitUntilAsync(() => !_globalViewModel.IsGameRunning);
+        _globalViewModel.ActivePlaySessions.ShouldBe(0);
+    }
+
+    private static Process StartBlockingProcess() => Process.Start(new ProcessStartInfo("cmd.exe", "/c pause")
+    {
+        UseShellExecute = false,
+        CreateNoWindow = true,
+        RedirectStandardInput = true,
+        RedirectStandardOutput = true
+    })!;
+
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+
+        while (!condition() && DateTime.UtcNow < deadline) await Task.Delay(25);
+
+        condition().ShouldBeTrue("Timed out waiting for the play session to close.");
     }
 }
