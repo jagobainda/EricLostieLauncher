@@ -128,6 +128,13 @@ Using AI tools as an **assistant** during development is allowed. That said:
   for the code they submit: for maintaining good practices, code quality, and
   security.
 
+If you work with a coding assistant, point it at [AGENTS.md](AGENTS.md): it is
+the machine-readable version of this guide (architecture rules, code
+conventions, testing constraints, and the exact commands CI runs). Most agentic
+tools read it automatically; Claude Code picks it up through the `CLAUDE.md`
+pointer at the repository root. Keeping the assistant inside those rules saves
+you review cycles — but it does not transfer responsibility for the result.
+
 ---
 
 ## 🐛 Reporting bugs or proposing improvements
