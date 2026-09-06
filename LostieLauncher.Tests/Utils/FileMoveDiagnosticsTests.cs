@@ -2,11 +2,6 @@ using LostieLauncher.Utils;
 
 namespace LostieLauncher.Tests.Utils;
 
-/// <summary>
-/// The four causes below all produce the very same "Access to the path is denied." from
-/// <see cref="File.Move(string, string, bool)"/>, with no path in the message. These tests pin the
-/// state that tells them apart in the log.
-/// </summary>
 public class FileMoveDiagnosticsTests : IDisposable
 {
     private readonly TempDirectoryFixture _temp = new("file-move-diagnostics");
@@ -20,7 +15,6 @@ public class FileMoveDiagnosticsTests : IDisposable
         return path;
     }
 
-    /// <summary>Runs the real move so the recorded exception is the production one.</summary>
     private static Exception CaptureMoveFailure(string source, string destination)
     {
         var error = Record.Exception(() => File.Move(source, destination, overwrite: true));
@@ -31,15 +25,12 @@ public class FileMoveDiagnosticsTests : IDisposable
     [Fact]
     public void Describe_WhenTheDestinationIsADirectory_NamesBothPathsAndTheDirectory()
     {
-        // Arrange
         var part = CreatePartFile();
         var destination = _temp.Combine("game.zip");
         Directory.CreateDirectory(destination);
 
-        // Act
         var description = FileMoveDiagnostics.Describe(part, destination, CaptureMoveFailure(part, destination));
 
-        // Assert
         description.ShouldContain(part);
         description.ShouldContain(destination);
         description.ShouldContain("destination='" + destination + "' [directory");
@@ -49,7 +40,6 @@ public class FileMoveDiagnosticsTests : IDisposable
     [Fact]
     public void Describe_WhenTheDestinationIsReadOnly_ReportsTheReadOnlyAttribute()
     {
-        // Arrange
         var part = CreatePartFile();
         var destination = _temp.Combine("game.zip");
         File.WriteAllText(destination, "previous");
@@ -57,10 +47,8 @@ public class FileMoveDiagnosticsTests : IDisposable
 
         try
         {
-            // Act
             var description = FileMoveDiagnostics.Describe(part, destination, CaptureMoveFailure(part, destination));
 
-            // Assert — a plain file, so it is not the directory case, and the attribute says why.
             description.ShouldContain("destination='" + destination + "' [file");
             description.ShouldContain("ReadOnly");
         }
@@ -73,31 +61,24 @@ public class FileMoveDiagnosticsTests : IDisposable
     [Fact]
     public void Describe_WhenTheDestinationIsHeldOpen_ReportsTheLock()
     {
-        // Arrange
         var part = CreatePartFile();
         var destination = _temp.Combine("game.zip");
         File.WriteAllText(destination, "previous");
         using var handle = new FileStream(destination, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        // Act
         var description = FileMoveDiagnostics.Describe(part, destination, CaptureMoveFailure(part, destination));
 
-        // Assert — same message as the read-only case; only the probe separates them.
         description.ShouldContain("lockedByAnotherProcess=True");
     }
 
     [Fact]
     public void Describe_WhenTheDestinationDoesNotExist_ReportsItAsMissing()
     {
-        // Arrange — this is the shape of the ACL case (the folder grants write but not delete): the
-        // move is denied even though nothing occupies the destination.
         var part = CreatePartFile();
         var destination = _temp.Combine("game.zip");
 
-        // Act
         var description = FileMoveDiagnostics.Describe(part, destination, new UnauthorizedAccessException("Access to the path is denied."));
 
-        // Assert
         description.ShouldContain("destination='" + destination + "' [missing]");
         description.ShouldContain("destinationDirectory='" + _temp.Path + "' [exists=True]");
     }
@@ -105,14 +86,11 @@ public class FileMoveDiagnosticsTests : IDisposable
     [Fact]
     public void Describe_RecordsTheSizeOfThePartFile()
     {
-        // Arrange
         var part = CreatePartFile();
         var expectedSize = new FileInfo(part).Length;
 
-        // Act
         var description = FileMoveDiagnostics.Describe(part, _temp.Combine("game.zip"), null);
 
-        // Assert — proves the transfer completed before the rename, as in the reported logs.
         description.ShouldContain("size=" + expectedSize);
         description.ShouldContain("win32=n/a");
         description.ShouldContain("error=n/a");

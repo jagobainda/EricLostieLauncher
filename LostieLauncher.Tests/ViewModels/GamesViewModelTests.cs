@@ -414,12 +414,7 @@ public class GamesViewModelTests
 
         condition().ShouldBeTrue("Timed out waiting for the play session to close.");
     }
-    // -------------------- UninstallCoreAsync --------------------
 
-    /// <summary>
-    /// Builds an installed game backed by a real folder on disk, optionally with the read-only
-    /// subdirectory that destroyed the reported installation.
-    /// </summary>
     private async Task<(GamesViewModel Vm, string GameDir)> CreateSutWithInstalledGameAsync(TempDirectoryFixture temp, bool readOnlyDirectory = false)
     {
         var gameDir = temp.Combine("Demo");
@@ -444,15 +439,11 @@ public class GamesViewModelTests
     [Fact]
     public async Task UninstallCoreAsync_WithAReadOnlyDirectoryInTheGameFolder_DeletesEverythingAndUnregisters()
     {
-        // Arrange — Directory.Delete(recursive: true) aborts on the read-only directory after having
-        // already wiped Game.exe and the data files, leaving a destroyed game still on the list.
         using var temp = new TempDirectoryFixture("uninstall-readonly");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp, readOnlyDirectory: true);
 
-        // Act
         var result = await vm.UninstallCoreAsync("Demo");
 
-        // Assert
         result.Outcome.ShouldBe(UninstallOutcome.Completed);
         Directory.Exists(gameDir).ShouldBeFalse();
         await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
@@ -462,17 +453,13 @@ public class GamesViewModelTests
     [Fact]
     public async Task UninstallCoreAsync_WhenDeletionIsBlocked_UnregistersAnywayAndNamesTheLeftoverPath()
     {
-        // Arrange — a genuine lock that no attribute handling can clear.
         using var temp = new TempDirectoryFixture("uninstall-blocked");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
         var locked = Path.Combine(gameDir, "Data", "save.dat");
         using var handle = new FileStream(locked, FileMode.Open, FileAccess.Read, FileShare.None);
 
-        // Act
         var result = await vm.UninstallCoreAsync("Demo");
 
-        // Assert — refusing to unregister would be the worst outcome: the recursive delete has
-        // already destroyed the installation, so the entry could never be launched nor removed.
         result.Outcome.ShouldBe(UninstallOutcome.FilesLeftBehind);
         result.BlockingPath.ShouldBe(locked);
         await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
@@ -483,14 +470,11 @@ public class GamesViewModelTests
     [Fact]
     public async Task UninstallCoreAsync_WhenTheGameFolderIsMissing_CleansUpTheStaleEntry()
     {
-        // Arrange — GetGameDirectory returns a non-existent path (fixture default).
         _contentService.GetLocalGamesAsync().Returns([TestData.LocalGame(name: "Demo", version: "1.0.0", id: Guid.NewGuid())]);
         var vm = await CreateSutAsync();
 
-        // Act
         var result = await vm.UninstallCoreAsync("Demo");
 
-        // Assert
         result.Outcome.ShouldBe(UninstallOutcome.FilesNotFound);
         result.BlockingPath.ShouldBeNull();
         await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
@@ -500,7 +484,6 @@ public class GamesViewModelTests
     [Fact]
     public async Task UninstallCoreAsync_WhileTheGameIsRunning_RefusesWithoutTouchingAnything()
     {
-        // Arrange
         using var temp = new TempDirectoryFixture("uninstall-running");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
         using var process = StartBlockingProcess();
@@ -508,10 +491,8 @@ public class GamesViewModelTests
 
         try
         {
-            // Act
             var result = await vm.UninstallCoreAsync("Demo");
 
-            // Assert — nothing is deleted, so the partial-delete window never opens.
             result.Outcome.ShouldBe(UninstallOutcome.GameRunning);
             Directory.Exists(gameDir).ShouldBeTrue();
             File.Exists(Path.Combine(gameDir, "Game.exe")).ShouldBeTrue();
@@ -527,19 +508,15 @@ public class GamesViewModelTests
     [Fact]
     public async Task UninstallCoreAsync_AfterTheGameHasExited_UninstallsNormally()
     {
-        // Arrange
         using var temp = new TempDirectoryFixture("uninstall-after-exit");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
         using var process = StartBlockingProcess();
         vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
         process.Kill(entireProcessTree: true);
-        // The exit handler disposes the tracked process, so wait on the launcher's own view of it.
         await WaitUntilAsync(() => vm.GetRunningSignal("Demo") == GameRunningSignal.NotRunning);
 
-        // Act
         var result = await vm.UninstallCoreAsync("Demo");
 
-        // Assert
         result.Outcome.ShouldBe(UninstallOutcome.Completed);
         Directory.Exists(gameDir).ShouldBeFalse();
         await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
@@ -548,35 +525,25 @@ public class GamesViewModelTests
     [Fact]
     public async Task GetRunningSignal_WhenTheExecutableIsHeldOpen_ReportsTheWeakerSignal()
     {
-        // Arrange — the game may have been started outside this launcher session, so there is no
-        // tracked process and the lock on the executable is the only evidence left. It is reported
-        // apart from TrackedProcess because Explorer and antivirus software hold it too.
         using var temp = new TempDirectoryFixture("uninstall-locked-exe");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
         vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.NotRunning);
 
         using var handle = new FileStream(Path.Combine(gameDir, "Game.exe"), FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        // Act & Assert
         vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.ExecutableLocked);
     }
 
     [Fact]
     public async Task UninstallCoreAsync_WhenOnlyTheExecutableIsLocked_DoesNotRefuse()
     {
-        // Arrange — a lock on Game.exe with no tracked process is not proof that the game is up
-        // (Explorer reading the icon or an antivirus scanning on access hold it the same way).
-        // Refusing on it would strand the user with a game that can never be uninstalled, which is
-        // the very failure this whole change is about, so the uninstall must go through.
         using var temp = new TempDirectoryFixture("uninstall-locked-exe-core");
         var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
         var exePath = Path.Combine(gameDir, "Game.exe");
         using var handle = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        // Act
         var result = await vm.UninstallCoreAsync("Demo");
 
-        // Assert — it ran, and the still-locked executable is reported as the leftover.
         result.Outcome.ShouldBe(UninstallOutcome.FilesLeftBehind);
         result.BlockingPath.ShouldBe(exePath);
         await _contentService.Received(1).RemoveGameRegistryAsync("Demo");

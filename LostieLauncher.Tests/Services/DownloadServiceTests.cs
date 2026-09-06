@@ -330,8 +330,6 @@ public class DownloadServiceTests : IDisposable
 
         var download = sut.DownloadAsync(DownloadUrl, dest, ct: cts.Token);
 
-        // Cancel only once the chunk has been written and the service is asking for more. Cancelling
-        // on a timer instead raced with the transfer on a loaded machine and left an empty .part.
         await initialStream.Blocked.Task.WaitAsync(TimeSpan.FromSeconds(30));
         await cts.CancelAsync();
 
@@ -498,11 +496,6 @@ public class DownloadServiceTests : IDisposable
         private readonly byte[] _chunk = chunk;
         private bool _sent;
 
-        /// <summary>
-        /// Completes when the reader has consumed the chunk and come back for more — that is, once
-        /// the service has already written those bytes. Cancelling on this instead of on a timer is
-        /// what keeps the resume tests off the wall clock.
-        /// </summary>
         public TaskCompletionSource Blocked { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         public override bool CanRead => true;

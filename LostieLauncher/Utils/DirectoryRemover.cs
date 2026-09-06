@@ -3,16 +3,6 @@ using System.IO;
 
 namespace LostieLauncher.Utils;
 
-/// <summary>
-/// Recursive directory removal that clears the read-only attribute before deleting each entry and
-/// retries transient failures.
-/// <para>
-/// <see cref="Directory.Delete(string, bool)"/> is unusable for uninstalling a game: it does not
-/// clear attributes, so a single read-only <b>directory</b> makes the final RemoveDirectory fail with
-/// ERROR_ACCESS_DENIED — after the recursion has already deleted every file underneath. The
-/// installation is destroyed and the caller only learns that "something" was denied.
-/// </para>
-/// </summary>
 public static class DirectoryRemover
 {
     private const int DefaultMaxAttempts = 3;
@@ -43,8 +33,6 @@ public static class DirectoryRemover
 
                 if (attempt >= maxAttempts) break;
 
-                // Linear backoff: a blocker worth waiting for (an antivirus scanning the folder, a
-                // process still shutting down) needs more room on each successive attempt.
                 var backoff = retryDelay * attempt;
                 Logs.InfoLogManager($"Delete attempt {attempt}/{maxAttempts} blocked at '{ex.BlockingPath}' ({cause.Message}), retrying in {backoff.TotalMilliseconds:0} ms...");
                 if (backoff > TimeSpan.Zero) Thread.Sleep(backoff);
@@ -58,8 +46,6 @@ public static class DirectoryRemover
     {
         try
         {
-            // A junction or symlink must be unlinked, never walked into: recursing would delete the
-            // contents of whatever it points at, outside the game folder.
             if (IsReparsePoint(directory))
             {
                 RemoveDirectory(directory);
@@ -77,7 +63,6 @@ public static class DirectoryRemover
         }
         catch (Exception ex)
         {
-            // Enumeration itself failed (the directory is unreadable), so it is the blocker.
             throw new DeletionBlockedException(directory, ex);
         }
     }
@@ -119,8 +104,6 @@ public static class DirectoryRemover
         }
         catch (Exception ex)
         {
-            // Best effort: if the attribute cannot be cleared, the delete right after reports the
-            // real blocker with its own exception.
             Logs.ErrorLogManager(ex);
         }
     }

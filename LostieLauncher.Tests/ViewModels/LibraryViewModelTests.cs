@@ -427,9 +427,6 @@ public class LibraryViewModelTests
     [Fact]
     public void AtomicSwapDirectories_WhenThePreviousVersionHasAReadOnlyDirectory_StillDeletesTheBackup()
     {
-        // Arrange — the previous version carries the same read-only directory that broke uninstall.
-        // Directory.Delete(recursive: true) refuses it, which used to leave a full copy of the old
-        // version behind as <game>.old after every single update.
         using var root = new TempDirectoryFixture("atomicswap-readonly");
         var source = root.Combine("source");
         var backup = root.Combine("backup");
@@ -444,10 +441,8 @@ public class LibraryViewModelTests
         File.WriteAllText(Path.Combine(blocked, "frame.png"), "pixels");
         File.SetAttributes(blocked, File.GetAttributes(blocked) | FileAttributes.ReadOnly);
 
-        // Act
         LibraryViewModel.AtomicSwapDirectories(source, backup, target);
 
-        // Assert
         Directory.Exists(backup).ShouldBeFalse();
         File.ReadAllText(Path.Combine(target, "game.exe")).ShouldBe("v2.0");
     }

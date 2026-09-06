@@ -18,11 +18,9 @@ public class FileLockProbeTests : IDisposable
     [Fact]
     public void IsLockedByAnotherProcess_WhenTheFileIsHeldOpen_ReturnsTrue()
     {
-        // Arrange
         var path = CreateFile();
         using var handle = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        // Act & Assert
         FileLockProbe.IsLockedByAnotherProcess(path).ShouldBeTrue();
     }
 
@@ -32,14 +30,11 @@ public class FileLockProbeTests : IDisposable
     [Fact]
     public void IsLockedByAnotherProcess_WhenTheFileIsReadOnly_ReturnsFalse()
     {
-        // Arrange — a read-only attribute is a permission matter, not a lock. Reporting it as "in
-        // use" would refuse an uninstall that is perfectly safe to run.
         var path = CreateFile();
         File.SetAttributes(path, FileAttributes.ReadOnly);
 
         try
         {
-            // Act & Assert
             FileLockProbe.IsLockedByAnotherProcess(path).ShouldBeFalse();
         }
         finally

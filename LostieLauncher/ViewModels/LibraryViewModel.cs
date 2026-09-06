@@ -482,12 +482,6 @@ public partial class LibraryViewModel : ObservableObject
         }
     });
 
-    /// <summary>
-    /// Best-effort removal of a temporary or backup tree. It goes through <see cref="DirectoryRemover"/>
-    /// rather than <c>Directory.Delete</c> because these trees are game folders: a single read-only
-    /// directory inside one makes the recursive delete fail, which would leave a full copy of the
-    /// previous version on disk after every update, forever.
-    /// </summary>
     private static void DeleteLeftoverDirectory(string path)
     {
         try

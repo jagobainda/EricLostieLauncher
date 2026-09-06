@@ -273,13 +273,6 @@ public class DownloadService : IDownloadService
         Logs.InfoLogManager("Download completed and file finalized.");
     }
 
-    /// <summary>
-    /// Renames the completed <c>.part</c> file over its final name, logging both paths and the state
-    /// of the destination when it fails. Without that snapshot the exception is undiagnosable: the
-    /// bare "Access to the path is denied." message carries no path and covers four different causes
-    /// (destination is a directory, destination is read-only, destination is held open, or the folder
-    /// grants write but not delete).
-    /// </summary>
     private static void FinalizeDownload(string partPath, string finalPath)
     {
         try

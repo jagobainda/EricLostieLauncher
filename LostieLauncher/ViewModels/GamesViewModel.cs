@@ -17,11 +17,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     private readonly LibraryViewModel _libraryViewModel;
     private readonly GlobalViewModel _globalViewModel;
 
-    /// <summary>
-    /// Processes launched from the launcher, by game name. Uninstalling a game whose process still
-    /// holds a file open makes the recursive delete fail part-way through, so the uninstall has to be
-    /// able to tell whether the game is still up.
-    /// </summary>
     private readonly ConcurrentDictionary<string, Process> _runningGames = new(StringComparer.OrdinalIgnoreCase);
 
     private const string HelpFolderName = "ayuda";
@@ -257,18 +252,9 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         }
     }
 
-    /// <summary>
-    /// Drops the tracked process only when it is still the one registered for that game, so a second
-    /// launch of the same game is not untracked by the first one's exit.
-    /// </summary>
     private void UntrackRunningGame(string gameName, Process process) =>
         ((ICollection<KeyValuePair<string, Process>>)_runningGames).Remove(new KeyValuePair<string, Process>(gameName, process));
 
-    /// <summary>
-    /// Whether the game is up, and on what evidence: a live process the launcher itself started, or
-    /// merely a hold on its executable. See <see cref="GameRunningSignal"/> for why the two are not
-    /// collapsed into a bool.
-    /// </summary>
     internal GameRunningSignal GetRunningSignal(string gameName)
     {
         if (_runningGames.TryGetValue(gameName, out var process))
@@ -279,9 +265,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             }
             catch (Exception ex)
             {
-                // Expected race, not a failure: the exit handler disposed the process between the
-                // lookup and the check. Fall through to the executable probe rather than assuming
-                // either answer.
                 Logs.DebugLogManager($"Tracked process for '{gameName}' was already disposed ({ex.GetType().Name}); falling back to the executable probe.");
             }
         }
@@ -430,8 +413,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
 
         void ShowGameRunning() => CustomMessageBox.Show(strings.UninstallGameRunningTitle, string.Format(strings.UninstallGameRunningMessage, gameName), CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
 
-        // Checked before the confirmation as well as inside the core: there is no point asking the
-        // user to confirm an uninstall that is going to be refused.
         var signal = GetRunningSignal(gameName);
 
         if (signal == GameRunningSignal.TrackedProcess)
@@ -441,8 +422,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // A held executable is a hint, not proof, so it turns the confirmation into a warning rather
-        // than blocking: the holder is as likely to be Explorer or an antivirus as the game itself.
         var executableLocked = signal == GameRunningSignal.ExecutableLocked;
         if (executableLocked) Logs.InfoLogManager($"The executable of '{gameName}' is held open by another process; warning the user instead of refusing the uninstall.");
 
@@ -477,17 +456,8 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         }
     }
 
-    /// <summary>
-    /// Deletes the game folder and unregisters the game. The registry entry is cleared <b>even when
-    /// the deletion fails</b>: by then the recursive delete has already removed most of the
-    /// installation, so keeping the game registered would leave the user with an entry that can
-    /// neither be launched nor removed.
-    /// </summary>
     internal async Task<UninstallResult> UninstallCoreAsync(string gameName)
     {
-        // Only a tracked live process blocks, because only that is conclusive. A merely locked
-        // executable is left to the caller to warn about, and to DirectoryRemover's retries and
-        // blocking-path reporting if it really was the game.
         if (GetRunningSignal(gameName) == GameRunningSignal.TrackedProcess)
         {
             Logs.InfoLogManager($"Uninstall refused, the launcher is still tracking a live process for: {gameName}.");
@@ -536,7 +506,6 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     {
         if (string.IsNullOrWhiteSpace(path)) return;
 
-        // The blocker may be a file; in that case the useful thing to open is the folder holding it.
         FolderLauncher.OpenFolder(Directory.Exists(path) ? path : Path.GetDirectoryName(path));
     }
 }
