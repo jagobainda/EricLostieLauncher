@@ -414,4 +414,156 @@ public class GamesViewModelTests
 
         condition().ShouldBeTrue("Timed out waiting for the play session to close.");
     }
+
+    private async Task<(GamesViewModel Vm, string GameDir)> CreateSutWithInstalledGameAsync(TempDirectoryFixture temp, bool readOnlyDirectory = false)
+    {
+        var gameDir = temp.Combine("Demo");
+        Directory.CreateDirectory(Path.Combine(gameDir, "Data"));
+        File.WriteAllText(Path.Combine(gameDir, "Game.exe"), "binary");
+        File.WriteAllText(Path.Combine(gameDir, "Data", "save.dat"), "data");
+
+        if (readOnlyDirectory)
+        {
+            var blocked = Path.Combine(gameDir, "Animations", "Beat_Up_hit_2");
+            Directory.CreateDirectory(blocked);
+            File.WriteAllText(Path.Combine(blocked, "frame.png"), "pixels");
+            File.SetAttributes(blocked, File.GetAttributes(blocked) | FileAttributes.ReadOnly);
+        }
+
+        _contentService.GetGameDirectory("Demo").Returns(gameDir);
+        _contentService.GetLocalGamesAsync().Returns([TestData.LocalGame(name: "Demo", version: "1.0.0", id: Guid.NewGuid())]);
+
+        return (await CreateSutAsync(), gameDir);
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WithAReadOnlyDirectoryInTheGameFolder_DeletesEverythingAndUnregisters()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-readonly");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp, readOnlyDirectory: true);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.Completed);
+        Directory.Exists(gameDir).ShouldBeFalse();
+        await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
+        vm.InstalledGames.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhenDeletionIsBlocked_UnregistersAnywayAndNamesTheLeftoverPath()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-blocked");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        var locked = Path.Combine(gameDir, "Data", "save.dat");
+        using var handle = new FileStream(locked, FileMode.Open, FileAccess.Read, FileShare.None);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.FilesLeftBehind);
+        result.BlockingPath.ShouldBe(locked);
+        await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
+        vm.InstalledGames.ShouldBeEmpty();
+        vm.IsEmpty.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhenTheGameFolderIsMissing_CleansUpTheStaleEntry()
+    {
+        _contentService.GetLocalGamesAsync().Returns([TestData.LocalGame(name: "Demo", version: "1.0.0", id: Guid.NewGuid())]);
+        var vm = await CreateSutAsync();
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.FilesNotFound);
+        result.BlockingPath.ShouldBeNull();
+        await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
+        vm.InstalledGames.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhileTheGameIsRunning_RefusesWithoutTouchingAnything()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-running");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        using var process = StartBlockingProcess();
+        vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
+
+        try
+        {
+            var result = await vm.UninstallCoreAsync("Demo");
+
+            result.Outcome.ShouldBe(UninstallOutcome.GameRunning);
+            Directory.Exists(gameDir).ShouldBeTrue();
+            File.Exists(Path.Combine(gameDir, "Game.exe")).ShouldBeTrue();
+            await _contentService.DidNotReceive().RemoveGameRegistryAsync(Arg.Any<string>());
+            vm.InstalledGames.Count.ShouldBe(1);
+        }
+        finally
+        {
+            process.Kill(entireProcessTree: true);
+        }
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_AfterTheGameHasExited_UninstallsNormally()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-after-exit");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        using var process = StartBlockingProcess();
+        vm.TrackPlaySession(process, "Demo", Guid.Empty, DateTime.UtcNow);
+        process.Kill(entireProcessTree: true);
+        await WaitUntilAsync(() => vm.GetRunningSignal("Demo") == GameRunningSignal.NotRunning);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.Completed);
+        Directory.Exists(gameDir).ShouldBeFalse();
+        await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
+    }
+
+    [Fact]
+    public async Task GetRunningSignal_WhenTheExecutableIsHeldOpen_ReportsTheWeakerSignal()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-locked-exe");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.NotRunning);
+
+        using var handle = new FileStream(Path.Combine(gameDir, "Game.exe"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.ExecutableLocked);
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhenOnlyTheExecutableIsLocked_DoesNotRefuse()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-locked-exe-core");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        var exePath = Path.Combine(gameDir, "Game.exe");
+        using var handle = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldNotBe(UninstallOutcome.GameRunning);
+        result.BlockingPath.ShouldBe(exePath);
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhenNothingCouldBeDeleted_KeepsTheGameRegistered()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-nothing-deleted");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        var exePath = Path.Combine(gameDir, "Game.exe");
+        using var handle = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.NothingDeleted);
+        result.BlockingPath.ShouldBe(exePath);
+        File.Exists(exePath).ShouldBeTrue();
+        File.Exists(Path.Combine(gameDir, "Data", "save.dat")).ShouldBeTrue();
+        await _contentService.DidNotReceive().RemoveGameRegistryAsync(Arg.Any<string>());
+        vm.InstalledGames.Count.ShouldBe(1);
+        vm.InstalledGames[0].IsUninstalling.ShouldBeFalse();
+    }
 }

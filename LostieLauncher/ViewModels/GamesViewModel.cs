@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LostieLauncher.Models;
 using LostieLauncher.Services;
 using LostieLauncher.Views.Dialogs;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +16,11 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     private readonly IContentService _contentService;
     private readonly LibraryViewModel _libraryViewModel;
     private readonly GlobalViewModel _globalViewModel;
+
+    private readonly ConcurrentDictionary<string, Process> _runningGames = new(StringComparer.OrdinalIgnoreCase);
+
     private const string HelpFolderName = "ayuda";
+    private const string GameExecutableName = "Game.exe";
     private bool _disposed;
 
     public event Action? NavigateToLibraryRequested;
@@ -190,7 +195,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     private void Play(string gameName)
     {
         Logs.DebugLogManager($"Launching game: {gameName}.");
-        var exePath = Path.Combine(_contentService.GetGameDirectory(gameName), "Game.exe");
+        var exePath = Path.Combine(_contentService.GetGameDirectory(gameName), GameExecutableName);
         var installedGame = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         var gameGuid = installedGame?.Id ?? Guid.Empty;
 
@@ -225,6 +230,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var exitHandler = AsyncEventHandler.Wrap((_, _) => RunOnce());
 
         _globalViewModel.BeginPlaySession();
+        _runningGames[gameName] = process;
 
         try
         {
@@ -237,8 +243,47 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         catch (Exception)
         {
             process.Exited -= exitHandler;
-            if (Interlocked.Exchange(ref handled, 1) == 0) _globalViewModel.EndPlaySession();
+            if (Interlocked.Exchange(ref handled, 1) == 0)
+            {
+                UntrackRunningGame(gameName, process);
+                _globalViewModel.EndPlaySession();
+            }
             throw;
+        }
+    }
+
+    private void UntrackRunningGame(string gameName, Process process) =>
+        ((ICollection<KeyValuePair<string, Process>>)_runningGames).Remove(new KeyValuePair<string, Process>(gameName, process));
+
+    internal GameRunningSignal GetRunningSignal(string gameName)
+    {
+        if (_runningGames.TryGetValue(gameName, out var process))
+        {
+            try
+            {
+                if (!process.HasExited) return GameRunningSignal.TrackedProcess;
+            }
+            catch (Exception ex)
+            {
+                Logs.DebugLogManager($"Tracked process for '{gameName}' was already disposed ({ex.GetType().Name}); falling back to the executable probe.");
+            }
+        }
+
+        return FileLockProbe.IsLockedByAnotherProcess(SafeGetGameExecutablePath(gameName))
+            ? GameRunningSignal.ExecutableLocked
+            : GameRunningSignal.NotRunning;
+    }
+
+    private string? SafeGetGameExecutablePath(string gameName)
+    {
+        try
+        {
+            return Path.Combine(_contentService.GetGameDirectory(gameName), GameExecutableName);
+        }
+        catch (Exception ex)
+        {
+            Logs.ErrorLogManager(ex);
+            return null;
         }
     }
 
@@ -256,6 +301,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             }
             finally
             {
+                UntrackRunningGame(gameName, process);
                 _globalViewModel.EndPlaySession();
             }
         }
@@ -365,12 +411,62 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     {
         var strings = SettingsViewModel.Instance.Strings;
 
-        var confirm = CustomMessageBox.Show(strings.UninstallConfirmTitle, string.Format(strings.UninstallConfirmMessage, gameName), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Information);
+        void ShowGameRunning() => CustomMessageBox.Show(strings.UninstallGameRunningTitle, string.Format(strings.UninstallGameRunningMessage, gameName), CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
+
+        var signal = GetRunningSignal(gameName);
+
+        if (signal == GameRunningSignal.TrackedProcess)
+        {
+            Logs.InfoLogManager($"Uninstall refused, the launcher is still tracking a live process for: {gameName}.");
+            ShowGameRunning();
+            return;
+        }
+
+        var executableLocked = signal == GameRunningSignal.ExecutableLocked;
+        if (executableLocked) Logs.InfoLogManager($"The executable of '{gameName}' is held open by another process; warning the user instead of refusing the uninstall.");
+
+        var confirm = CustomMessageBox.Show(
+            executableLocked ? strings.UninstallGameRunningTitle : strings.UninstallConfirmTitle,
+            string.Format(executableLocked ? strings.UninstallMaybeRunningMessage : strings.UninstallConfirmMessage, gameName),
+            CustomMessageBoxButton.YesNo,
+            executableLocked ? CustomMessageBoxIcon.Error : CustomMessageBoxIcon.Information);
 
         if (confirm != true)
         {
             Logs.DebugLogManager($"Uninstall cancelled by user: {gameName}.");
             return;
+        }
+
+        var result = await UninstallCoreAsync(gameName);
+
+        switch (result.Outcome)
+        {
+            case UninstallOutcome.GameRunning:
+                ShowGameRunning();
+                break;
+
+            case UninstallOutcome.FilesNotFound:
+                CustomMessageBox.Show(strings.UninstallNotFoundTitle, strings.UninstallNotFoundMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Information);
+                break;
+
+            case UninstallOutcome.FilesLeftBehind:
+                var openFolder = CustomMessageBox.Show(strings.UninstallErrorTitle, string.Format(strings.UninstallErrorMessage, gameName, result.BlockingPath), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error);
+                if (openFolder == true) OpenLeftoverLocation(result.BlockingPath);
+                break;
+
+            case UninstallOutcome.NothingDeleted:
+                var openBlocker = CustomMessageBox.Show(strings.UninstallBlockedTitle, string.Format(strings.UninstallBlockedMessage, gameName, result.BlockingPath), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error);
+                if (openBlocker == true) OpenLeftoverLocation(result.BlockingPath);
+                break;
+        }
+    }
+
+    internal async Task<UninstallResult> UninstallCoreAsync(string gameName)
+    {
+        if (GetRunningSignal(gameName) == GameRunningSignal.TrackedProcess)
+        {
+            Logs.InfoLogManager($"Uninstall refused, the launcher is still tracking a live process for: {gameName}.");
+            return new UninstallResult(UninstallOutcome.GameRunning);
         }
 
         Logs.InfoLogManager($"Uninstalling game: {gameName}.");
@@ -380,25 +476,31 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var target = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         target?.IsUninstalling = true;
 
-        if (folderExisted)
+        var deletion = folderExisted
+            ? await Task.Run(() => DirectoryRemover.Delete(path))
+            : new DirectoryDeletionResult(Deleted: true, Attempts: 0);
+
+        var blockingPath = deletion.BlockingPath ?? path;
+
+        if (!deletion.Deleted)
         {
-            try
+            if (deletion.Error is not null) Logs.ErrorLogManager(deletion.Error);
+
+            if (deletion.DeletedEntries == 0)
             {
-                await Task.Run(() => Directory.Delete(path, recursive: true));
-            }
-            catch (Exception ex)
-            {
-                Logs.ErrorLogManager(ex);
+                Logs.ErrorLogManager($"Uninstall deleted nothing of '{gameName}' after {deletion.Attempts} attempt(s). Blocked at: {blockingPath}. The installation is untouched, so the game stays registered.");
                 target?.IsUninstalling = false;
-                CustomMessageBox.Show(strings.UninstallErrorTitle, strings.UninstallErrorMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
-                return;
+                return new UninstallResult(UninstallOutcome.NothingDeleted, blockingPath);
             }
+
+            Logs.ErrorLogManager($"Uninstall could not delete every file of '{gameName}' after {deletion.Attempts} attempt(s). Blocked at: {blockingPath}. Unregistering the game anyway so the user is not left with an entry that cannot be launched or removed.");
         }
 
         await _contentService.RemoveGameRegistryAsync(gameName);
 
         if (target != null)
         {
+            target.IsUninstalling = false;
             InstalledGames.Remove(target);
             OnPropertyChanged(nameof(IsEmpty));
             OnPropertyChanged(nameof(IsListVisible));
@@ -407,8 +509,16 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var libraryGame = _libraryViewModel.Games.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         libraryGame?.DownloadStatus = GameDownloadStatus.Available;
 
-        Logs.InfoLogManager($"Game uninstalled: {gameName}.");
+        if (!deletion.Deleted) return new UninstallResult(UninstallOutcome.FilesLeftBehind, blockingPath);
 
-        if (!folderExisted) CustomMessageBox.Show(strings.UninstallNotFoundTitle, strings.UninstallNotFoundMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Information);
+        Logs.InfoLogManager($"Game uninstalled: {gameName}.");
+        return new UninstallResult(folderExisted ? UninstallOutcome.Completed : UninstallOutcome.FilesNotFound);
+    }
+
+    private static void OpenLeftoverLocation(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        FolderLauncher.OpenFolder(Directory.Exists(path) ? path : Path.GetDirectoryName(path));
     }
 }

@@ -308,6 +308,7 @@ public class DownloadServiceTests : IDisposable
         Func<HttpRequestMessage, HttpResponseMessage> onResume)
     {
         var phase = 0;
+        var initialStream = new ChunkThenBlockStream(chunk);
         _httpFactory.HandlerFor("Download").Respond(req =>
         {
             phase++;
@@ -315,7 +316,7 @@ public class DownloadServiceTests : IDisposable
             {
                 var resp = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StreamContent(new ChunkThenBlockStream(chunk)),
+                    Content = new StreamContent(initialStream),
                 };
                 configureInitial?.Invoke(resp);
                 return resp;
@@ -326,9 +327,13 @@ public class DownloadServiceTests : IDisposable
 
         var dest = Path.Combine(_temp.Path, "game.zip");
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromMilliseconds(150));
 
-        var paused = await sut.DownloadAsync(DownloadUrl, dest, ct: cts.Token);
+        var download = sut.DownloadAsync(DownloadUrl, dest, ct: cts.Token);
+
+        await initialStream.Blocked.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await cts.CancelAsync();
+
+        var paused = await download;
 
         // Sanity: the first phase must have paused, leaving a partial file behind.
         paused.Outcome.ShouldBe(DownloadOutcome.Cancelled);
@@ -490,6 +495,9 @@ public class DownloadServiceTests : IDisposable
     {
         private readonly byte[] _chunk = chunk;
         private bool _sent;
+
+        public TaskCompletionSource Blocked { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => false;
@@ -507,6 +515,8 @@ public class DownloadServiceTests : IDisposable
                 _chunk.AsMemory(0, n).CopyTo(buffer);
                 return n;
             }
+
+            Blocked.TrySetResult();
             await Task.Delay(Timeout.Infinite, ct).ConfigureAwait(false);
             return 0;
         }

@@ -6,7 +6,9 @@
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:viewmodels="clr-namespace:LostieLauncher.ViewModels"
         mc:Ignorable="d"
-        Height="220"
+        SizeToContent="Height"
+        MinHeight="220"
+        MaxHeight="560"
         Width="420"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -48,13 +50,18 @@
             </Button>
         </Grid>
 
-        <TextBlock x:Name="DescriptionText"
-                   Grid.Row="1"
-                   Foreground="{DynamicResource SecondaryFgBrush}"
-                   FontSize="13"
-                   TextWrapping="Wrap"
-                   VerticalAlignment="Center"
-                   Margin="20,0,20,0" />
+        <!-- The window grows with the message (paths in the uninstall error are long and would be
+             clipped by a fixed height) and scrolls only once it hits MaxHeight. -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalAlignment="Center"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="20,0,20,0">
+            <TextBlock x:Name="DescriptionText"
+                       Foreground="{DynamicResource SecondaryFgBrush}"
+                       FontSize="13"
+                       TextWrapping="Wrap" />
+        </ScrollViewer>
 
         <Grid Grid.Row="2" Margin="20,0,20,20" VerticalAlignment="Bottom">
             <StackPanel x:Name="OkPanel"
