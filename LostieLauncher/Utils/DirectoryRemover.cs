@@ -17,19 +17,21 @@ public static class DirectoryRemover
 
         DirectoryDeletionResult? failure = null;
 
+        var deletedEntries = 0;
+
         for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
-            if (!Directory.Exists(path)) return new DirectoryDeletionResult(true, attempt);
+            if (!Directory.Exists(path)) return new DirectoryDeletionResult(true, attempt, DeletedEntries: deletedEntries);
 
             try
             {
-                DeleteTree(path);
-                return new DirectoryDeletionResult(true, attempt);
+                DeleteTree(path, ref deletedEntries);
+                return new DirectoryDeletionResult(true, attempt, DeletedEntries: deletedEntries);
             }
             catch (DeletionBlockedException ex)
             {
                 var cause = ex.InnerException ?? ex;
-                failure = new DirectoryDeletionResult(false, attempt, ex.BlockingPath, cause);
+                failure = new DirectoryDeletionResult(false, attempt, ex.BlockingPath, cause, deletedEntries);
 
                 if (attempt >= maxAttempts) break;
 
@@ -39,23 +41,32 @@ public static class DirectoryRemover
             }
         }
 
-        return failure ?? new DirectoryDeletionResult(false, maxAttempts, path);
+        return failure is null
+            ? new DirectoryDeletionResult(false, maxAttempts, path, DeletedEntries: deletedEntries)
+            : failure with { DeletedEntries = deletedEntries };
     }
 
-    private static void DeleteTree(string directory)
+    private static void DeleteTree(string directory, ref int deletedEntries)
     {
         try
         {
             if (IsReparsePoint(directory))
             {
                 RemoveDirectory(directory);
+                deletedEntries++;
                 return;
             }
 
-            foreach (var file in Directory.EnumerateFiles(directory)) DeleteFile(file);
-            foreach (var subdirectory in Directory.EnumerateDirectories(directory)) DeleteTree(subdirectory);
+            foreach (var file in Directory.EnumerateFiles(directory))
+            {
+                DeleteFile(file);
+                deletedEntries++;
+            }
+
+            foreach (var subdirectory in Directory.EnumerateDirectories(directory)) DeleteTree(subdirectory, ref deletedEntries);
 
             RemoveDirectory(directory);
+            deletedEntries++;
         }
         catch (DeletionBlockedException)
         {
@@ -117,7 +128,7 @@ public static class DirectoryRemover
         catch (Exception ex)
         {
             Logs.ErrorLogManager(ex);
-            return false;
+            return true;
         }
     }
 

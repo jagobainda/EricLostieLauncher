@@ -8,6 +8,8 @@ public enum UninstallOutcome
 
     FilesLeftBehind,
 
+    NothingDeleted,
+
     GameRunning
 }
 

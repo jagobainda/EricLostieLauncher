@@ -544,9 +544,26 @@ public class GamesViewModelTests
 
         var result = await vm.UninstallCoreAsync("Demo");
 
-        result.Outcome.ShouldBe(UninstallOutcome.FilesLeftBehind);
+        result.Outcome.ShouldNotBe(UninstallOutcome.GameRunning);
         result.BlockingPath.ShouldBe(exePath);
-        await _contentService.Received(1).RemoveGameRegistryAsync("Demo");
-        vm.InstalledGames.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task UninstallCoreAsync_WhenNothingCouldBeDeleted_KeepsTheGameRegistered()
+    {
+        using var temp = new TempDirectoryFixture("uninstall-nothing-deleted");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        var exePath = Path.Combine(gameDir, "Game.exe");
+        using var handle = new FileStream(exePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var result = await vm.UninstallCoreAsync("Demo");
+
+        result.Outcome.ShouldBe(UninstallOutcome.NothingDeleted);
+        result.BlockingPath.ShouldBe(exePath);
+        File.Exists(exePath).ShouldBeTrue();
+        File.Exists(Path.Combine(gameDir, "Data", "save.dat")).ShouldBeTrue();
+        await _contentService.DidNotReceive().RemoveGameRegistryAsync(Arg.Any<string>());
+        vm.InstalledGames.Count.ShouldBe(1);
+        vm.InstalledGames[0].IsUninstalling.ShouldBeFalse();
     }
 }

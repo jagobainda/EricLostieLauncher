@@ -453,6 +453,11 @@ public partial class GamesViewModel : ObservableObject, IDisposable
                 var openFolder = CustomMessageBox.Show(strings.UninstallErrorTitle, string.Format(strings.UninstallErrorMessage, gameName, result.BlockingPath), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error);
                 if (openFolder == true) OpenLeftoverLocation(result.BlockingPath);
                 break;
+
+            case UninstallOutcome.NothingDeleted:
+                var openBlocker = CustomMessageBox.Show(strings.UninstallBlockedTitle, string.Format(strings.UninstallBlockedMessage, gameName, result.BlockingPath), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error);
+                if (openBlocker == true) OpenLeftoverLocation(result.BlockingPath);
+                break;
         }
     }
 
@@ -480,6 +485,14 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         if (!deletion.Deleted)
         {
             if (deletion.Error is not null) Logs.ErrorLogManager(deletion.Error);
+
+            if (deletion.DeletedEntries == 0)
+            {
+                Logs.ErrorLogManager($"Uninstall deleted nothing of '{gameName}' after {deletion.Attempts} attempt(s). Blocked at: {blockingPath}. The installation is untouched, so the game stays registered.");
+                target?.IsUninstalling = false;
+                return new UninstallResult(UninstallOutcome.NothingDeleted, blockingPath);
+            }
+
             Logs.ErrorLogManager($"Uninstall could not delete every file of '{gameName}' after {deletion.Attempts} attempt(s). Blocked at: {blockingPath}. Unregistering the game anyway so the user is not left with an entry that cannot be launched or removed.");
         }
 

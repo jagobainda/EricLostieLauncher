@@ -76,6 +76,46 @@ public class DirectoryRemoverTests : IDisposable
     }
 
     [Fact]
+    public void Delete_WhenEverythingIsRemoved_CountsEveryDeletedEntry()
+    {
+        var root = ArrangeGameFolder();
+
+        var result = DeleteOnce(root);
+
+        result.Deleted.ShouldBeTrue();
+        result.DeletedEntries.ShouldBe(9);
+    }
+
+    [Fact]
+    public void Delete_WhenTheOnlyRootFileIsHeldOpen_ReportsThatNothingWasDeleted()
+    {
+        var root = _temp.Combine("Untouched");
+        Directory.CreateDirectory(root);
+        var locked = Path.Combine(root, "Game.exe");
+        File.WriteAllText(locked, "binary");
+        using var handle = new FileStream(locked, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var result = DeleteOnce(root);
+
+        result.Deleted.ShouldBeFalse();
+        result.BlockingPath.ShouldBe(locked);
+        result.DeletedEntries.ShouldBe(0);
+        File.Exists(locked).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Delete_WhenTheBlockerAppearsAfterSomeFilesAreGone_KeepsTheTallyAcrossAttempts()
+    {
+        var root = ArrangeGameFolder();
+        using var handle = new FileStream(Path.Combine(root, "Data", "save.dat"), FileMode.Open, FileAccess.Read, FileShare.None);
+
+        var result = DirectoryRemover.Delete(root, maxAttempts: 3, retryDelay: TimeSpan.Zero);
+
+        result.Deleted.ShouldBeFalse();
+        result.Attempts.ShouldBe(3);
+        result.DeletedEntries.ShouldBeGreaterThan(0);
+    }
+    [Fact]
     public void Delete_WhenAFileIsHeldOpen_ReportsTheBlockingPath()
     {
         var root = ArrangeGameFolder();
