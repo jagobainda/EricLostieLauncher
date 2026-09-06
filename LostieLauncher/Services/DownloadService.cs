@@ -191,7 +191,7 @@ public class DownloadService : IDownloadService
             if (meta?.TotalBytes is long expectedTotal && existingBytes == expectedTotal)
             {
                 Logs.InfoLogManager("Server returned 416 — partial file matches expected size, treating as complete.");
-                File.Move(partPath, finalPath, overwrite: true);
+                FinalizeDownload(partPath, finalPath);
                 DeleteResumeMetadata(metaPath);
                 progress?.Report(new DownloadProgressInfo(100, 0));
                 return;
@@ -267,10 +267,30 @@ public class DownloadService : IDownloadService
 
             Logs.DebugLogManager($"Download data received: {totalRead} bytes total.");
         }
-        File.Move(partPath, finalPath, overwrite: true);
+        FinalizeDownload(partPath, finalPath);
         DeleteResumeMetadata(metaPath);
         progress?.Report(new DownloadProgressInfo(100, 0));
         Logs.InfoLogManager("Download completed and file finalized.");
+    }
+
+    /// <summary>
+    /// Renames the completed <c>.part</c> file over its final name, logging both paths and the state
+    /// of the destination when it fails. Without that snapshot the exception is undiagnosable: the
+    /// bare "Access to the path is denied." message carries no path and covers four different causes
+    /// (destination is a directory, destination is read-only, destination is held open, or the folder
+    /// grants write but not delete).
+    /// </summary>
+    private static void FinalizeDownload(string partPath, string finalPath)
+    {
+        try
+        {
+            File.Move(partPath, finalPath, overwrite: true);
+        }
+        catch (Exception ex)
+        {
+            Logs.ErrorLogManager($"Download finalization failed: {Utils.FileMoveDiagnostics.Describe(partPath, finalPath, ex)}");
+            throw;
+        }
     }
 
     private sealed record DownloadResumeMetadata(string? ETag, DateTimeOffset? LastModified, long? TotalBytes);
