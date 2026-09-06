@@ -137,7 +137,7 @@ public class Esp : IStrings
     public string UninstallNotFoundTitle => "Archivos no encontrados";
     public string UninstallNotFoundMessage => "No se encontraron los archivos del juego, pero se ha limpiado el registro de la lista.";
     public string UninstallErrorTitle => "Error al desinstalar";
-    public string UninstallErrorMessage => "No se pudo desinstalar el juego. Es posible que algunos archivos estén en uso.";
+    public string UninstallErrorMessage => "No se pudieron borrar todos los archivos de {0}. El juego se ha quitado de tu lista, pero queda esto en el disco:\n\n{1}\n\n¿Quieres abrir su ubicación para borrarlo a mano?";
     public string UninstallGameRunningTitle => "El juego está abierto";
     public string UninstallGameRunningMessage => "Cierra {0} antes de desinstalarlo.";
     public string UninstallMaybeRunningMessage => "Parece que {0} está en uso por otro programa (el propio juego, un antivirus o el explorador de archivos). Si lo desinstalas ahora es posible que queden archivos sin borrar. ¿Quieres continuar de todas formas?";
@@ -245,7 +245,7 @@ public class Eng : IStrings
     public string UninstallNotFoundTitle => "Files not found";
     public string UninstallNotFoundMessage => "The game files were not found, but the entry has been cleaned up from the list.";
     public string UninstallErrorTitle => "Uninstall error";
-    public string UninstallErrorMessage => "Failed to uninstall the game. Some files may be in use.";
+    public string UninstallErrorMessage => "Some files of {0} could not be deleted. The game has been removed from your list, but this is still on disk:\n\n{1}\n\nDo you want to open its location to delete it manually?";
     public string UninstallGameRunningTitle => "Game is running";
     public string UninstallGameRunningMessage => "Close {0} before uninstalling it.";
     public string UninstallMaybeRunningMessage => "{0} looks like it is in use by another program (the game itself, an antivirus or the file explorer). Uninstalling now may leave files behind. Do you want to continue anyway?";
@@ -353,7 +353,7 @@ public class Cat : IStrings
     public string UninstallNotFoundTitle => "Fitxers no trobats";
     public string UninstallNotFoundMessage => "No s'han trobat els fitxers del joc, però s'ha netejat el registre de la llista.";
     public string UninstallErrorTitle => "Error en desinstal·lar";
-    public string UninstallErrorMessage => "No s'ha pogut desinstal·lar el joc. És possible que alguns fitxers estiguin en ús.";
+    public string UninstallErrorMessage => "No s'han pogut esborrar tots els fitxers de {0}. El joc s'ha tret de la teva llista, però queda això al disc:\n\n{1}\n\nVols obrir la seva ubicació per esborrar-ho a mà?";
     public string UninstallGameRunningTitle => "El joc està obert";
     public string UninstallGameRunningMessage => "Tanca {0} abans de desinstal·lar-lo.";
     public string UninstallMaybeRunningMessage => "Sembla que {0} està en ús per un altre programa (el mateix joc, un antivirus o l'explorador de fitxers). Si el desinstal·les ara, pot ser que quedin fitxers sense esborrar. Vols continuar igualment?";
@@ -461,7 +461,7 @@ public class Eus : IStrings
     public string UninstallNotFoundTitle => "Fitxategiak ez dira aurkitu";
     public string UninstallNotFoundMessage => "Jokoaren fitxategiak ez dira aurkitu, baina zerrenda garbi utzi da.";
     public string UninstallErrorTitle => "Desinstalazio errorea";
-    public string UninstallErrorMessage => "Ezin izan da jokoa desinstalatu. Baliteke fitxategi batzuk erabilita egotea.";
+    public string UninstallErrorMessage => "Ezin izan dira {0} jokoaren fitxategi guztiak ezabatu. Jokoa zerrendatik kendu da, baina hau diskoan dago oraindik:\n\n{1}\n\nBere kokapena ireki nahi duzu eskuz ezabatzeko?";
     public string UninstallGameRunningTitle => "Jokoa irekita dago";
     public string UninstallGameRunningMessage => "Itxi {0} desinstalatu aurretik.";
     public string UninstallMaybeRunningMessage => "Badirudi {0} beste programa batek erabiltzen duela (jokoa bera, antibirus bat edo fitxategi-arakatzailea). Orain desinstalatzen baduzu, baliteke fitxategi batzuk ezabatu gabe geratzea. Jarraitu nahi duzu?";
@@ -569,7 +569,7 @@ public class Gal : IStrings
     public string UninstallNotFoundTitle => "Ficheiros non atopados";
     public string UninstallNotFoundMessage => "Non se atoparon os ficheiros do xogo, pero limpouse o rexistro da lista.";
     public string UninstallErrorTitle => "Erro ao desinstalar";
-    public string UninstallErrorMessage => "Non se puido desinstalar o xogo. É posible que algúns ficheiros estean en uso.";
+    public string UninstallErrorMessage => "Non se puideron borrar todos os ficheiros de {0}. O xogo quitouse da túa lista, pero queda isto no disco:\n\n{1}\n\nQueres abrir a súa localización para borralo a man?";
     public string UninstallGameRunningTitle => "O xogo está aberto";
     public string UninstallGameRunningMessage => "Pecha {0} antes de desinstalalo.";
     public string UninstallMaybeRunningMessage => "Parece que {0} está en uso por outro programa (o propio xogo, un antivirus ou o explorador de ficheiros). Se o desinstalas agora é posible que queden ficheiros sen borrar. Queres continuar de todos os xeitos?";
@@ -677,7 +677,7 @@ public class Por : IStrings
     public string UninstallNotFoundTitle => "Arquivos não encontrados";
     public string UninstallNotFoundMessage => "Os arquivos do jogo não foram encontrados, mas o registro foi limpo da lista.";
     public string UninstallErrorTitle => "Erro ao desinstalar";
-    public string UninstallErrorMessage => "Não foi possível desinstalar o jogo. Alguns arquivos podem estar em uso.";
+    public string UninstallErrorMessage => "Não foi possível apagar todos os arquivos de {0}. O jogo foi removido da sua lista, mas isto ainda está no disco:\n\n{1}\n\nDeseja abrir a localização para apagá-lo manualmente?";
     public string UninstallGameRunningTitle => "O jogo está aberto";
     public string UninstallGameRunningMessage => "Feche {0} antes de desinstalá-lo.";
     public string UninstallMaybeRunningMessage => "Parece que {0} está em uso por outro programa (o próprio jogo, um antivírus ou o explorador de arquivos). Se desinstalar agora, alguns arquivos podem não ser apagados. Deseja continuar mesmo assim?";
@@ -785,7 +785,7 @@ public class Val : IStrings
     public string UninstallNotFoundTitle => "Fitxers no trobats";
     public string UninstallNotFoundMessage => "No s'han trobat els fitxers del joc, però s'ha netejat el registre de la llista.";
     public string UninstallErrorTitle => "Error en desinstal·lar";
-    public string UninstallErrorMessage => "No s'ha pogut desinstal·lar el joc. És possible que alguns fitxers estiguen en ús.";
+    public string UninstallErrorMessage => "No s'han pogut esborrar tots els fitxers de {0}. El joc s'ha tret de la teua llista, però queda això en el disc:\n\n{1}\n\nVols obrir la seua ubicació per a esborrar-ho a mà?";
     public string UninstallGameRunningTitle => "El joc està obert";
     public string UninstallGameRunningMessage => "Tanca {0} abans de desinstal·lar-lo.";
     public string UninstallMaybeRunningMessage => "Pareix que {0} està en ús per un altre programa (el mateix joc, un antivirus o l'explorador de fitxers). Si el desinstal·les ara, pot ser que queden fitxers sense esborrar. Vols continuar igualment?";
@@ -893,7 +893,7 @@ public class Fra : IStrings
     public string UninstallNotFoundTitle => "Fichiers non trouvés";
     public string UninstallNotFoundMessage => "Les fichiers du jeu n'ont pas été trouvés, mais l'entrée a été supprimée de la liste.";
     public string UninstallErrorTitle => "Erreur de désinstallation";
-    public string UninstallErrorMessage => "Impossible de désinstaller le jeu. Certains fichiers peuvent être en cours d'utilisation.";
+    public string UninstallErrorMessage => "Certains fichiers de {0} n'ont pas pu être supprimés. Le jeu a été retiré de votre liste, mais ceci reste sur le disque :\n\n{1}\n\nVoulez-vous ouvrir son emplacement pour le supprimer manuellement ?";
     public string UninstallGameRunningTitle => "Le jeu est en cours d'exécution";
     public string UninstallGameRunningMessage => "Fermez {0} avant de le désinstaller.";
     public string UninstallMaybeRunningMessage => "{0} semble être utilisé par un autre programme (le jeu lui-même, un antivirus ou l'explorateur de fichiers). Si vous le désinstallez maintenant, des fichiers pourraient rester. Voulez-vous continuer quand même ?";

@@ -458,6 +458,42 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             return;
         }
 
+        var result = await UninstallCoreAsync(gameName);
+
+        switch (result.Outcome)
+        {
+            case UninstallOutcome.GameRunning:
+                ShowGameRunning();
+                break;
+
+            case UninstallOutcome.FilesNotFound:
+                CustomMessageBox.Show(strings.UninstallNotFoundTitle, strings.UninstallNotFoundMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Information);
+                break;
+
+            case UninstallOutcome.FilesLeftBehind:
+                var openFolder = CustomMessageBox.Show(strings.UninstallErrorTitle, string.Format(strings.UninstallErrorMessage, gameName, result.BlockingPath), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Error);
+                if (openFolder == true) OpenLeftoverLocation(result.BlockingPath);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Deletes the game folder and unregisters the game. The registry entry is cleared <b>even when
+    /// the deletion fails</b>: by then the recursive delete has already removed most of the
+    /// installation, so keeping the game registered would leave the user with an entry that can
+    /// neither be launched nor removed.
+    /// </summary>
+    internal async Task<UninstallResult> UninstallCoreAsync(string gameName)
+    {
+        // Only a tracked live process blocks, because only that is conclusive. A merely locked
+        // executable is left to the caller to warn about, and to DirectoryRemover's retries and
+        // blocking-path reporting if it really was the game.
+        if (GetRunningSignal(gameName) == GameRunningSignal.TrackedProcess)
+        {
+            Logs.InfoLogManager($"Uninstall refused, the launcher is still tracking a live process for: {gameName}.");
+            return new UninstallResult(UninstallOutcome.GameRunning);
+        }
+
         Logs.InfoLogManager($"Uninstalling game: {gameName}.");
         var path = _contentService.GetGameDirectory(gameName);
         var folderExisted = Directory.Exists(path);
@@ -465,25 +501,23 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var target = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         target?.IsUninstalling = true;
 
-        if (folderExisted)
+        var deletion = folderExisted
+            ? await Task.Run(() => DirectoryRemover.Delete(path))
+            : new DirectoryDeletionResult(Deleted: true, Attempts: 0);
+
+        var blockingPath = deletion.BlockingPath ?? path;
+
+        if (!deletion.Deleted)
         {
-            try
-            {
-                await Task.Run(() => Directory.Delete(path, recursive: true));
-            }
-            catch (Exception ex)
-            {
-                Logs.ErrorLogManager(ex);
-                target?.IsUninstalling = false;
-                CustomMessageBox.Show(strings.UninstallErrorTitle, strings.UninstallErrorMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
-                return;
-            }
+            if (deletion.Error is not null) Logs.ErrorLogManager(deletion.Error);
+            Logs.ErrorLogManager($"Uninstall could not delete every file of '{gameName}' after {deletion.Attempts} attempt(s). Blocked at: {blockingPath}. Unregistering the game anyway so the user is not left with an entry that cannot be launched or removed.");
         }
 
         await _contentService.RemoveGameRegistryAsync(gameName);
 
         if (target != null)
         {
+            target.IsUninstalling = false;
             InstalledGames.Remove(target);
             OnPropertyChanged(nameof(IsEmpty));
             OnPropertyChanged(nameof(IsListVisible));
@@ -492,8 +526,17 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var libraryGame = _libraryViewModel.Games.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         libraryGame?.DownloadStatus = GameDownloadStatus.Available;
 
-        Logs.InfoLogManager($"Game uninstalled: {gameName}.");
+        if (!deletion.Deleted) return new UninstallResult(UninstallOutcome.FilesLeftBehind, blockingPath);
 
-        if (!folderExisted) CustomMessageBox.Show(strings.UninstallNotFoundTitle, strings.UninstallNotFoundMessage, CustomMessageBoxButton.OK, CustomMessageBoxIcon.Information);
+        Logs.InfoLogManager($"Game uninstalled: {gameName}.");
+        return new UninstallResult(folderExisted ? UninstallOutcome.Completed : UninstallOutcome.FilesNotFound);
+    }
+
+    private static void OpenLeftoverLocation(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        // The blocker may be a file; in that case the useful thing to open is the folder holding it.
+        FolderLauncher.OpenFolder(Directory.Exists(path) ? path : Path.GetDirectoryName(path));
     }
 }

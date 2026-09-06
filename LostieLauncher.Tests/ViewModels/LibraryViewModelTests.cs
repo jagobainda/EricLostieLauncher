@@ -424,6 +424,34 @@ public class LibraryViewModelTests
         Directory.Exists(backup).ShouldBeFalse();
     }
 
+    [Fact]
+    public void AtomicSwapDirectories_WhenThePreviousVersionHasAReadOnlyDirectory_StillDeletesTheBackup()
+    {
+        // Arrange — the previous version carries the same read-only directory that broke uninstall.
+        // Directory.Delete(recursive: true) refuses it, which used to leave a full copy of the old
+        // version behind as <game>.old after every single update.
+        using var root = new TempDirectoryFixture("atomicswap-readonly");
+        var source = root.Combine("source");
+        var backup = root.Combine("backup");
+        var target = root.Combine("target");
+
+        Directory.CreateDirectory(source);
+        File.WriteAllText(Path.Combine(source, "game.exe"), "v2.0");
+
+        var blocked = Path.Combine(target, "Animations", "Beat_Up_hit_2");
+        Directory.CreateDirectory(blocked);
+        File.WriteAllText(Path.Combine(target, "game.exe"), "v1.0");
+        File.WriteAllText(Path.Combine(blocked, "frame.png"), "pixels");
+        File.SetAttributes(blocked, File.GetAttributes(blocked) | FileAttributes.ReadOnly);
+
+        // Act
+        LibraryViewModel.AtomicSwapDirectories(source, backup, target);
+
+        // Assert
+        Directory.Exists(backup).ShouldBeFalse();
+        File.ReadAllText(Path.Combine(target, "game.exe")).ShouldBe("v2.0");
+    }
+
     // ---- BUG-025: integrity verification is mandatory and fail-closed ----------------------
 
     [Fact]

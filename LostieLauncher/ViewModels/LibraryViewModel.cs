@@ -439,8 +439,8 @@ public partial class LibraryViewModel : ObservableObject
         var tempDir = extractDir + ".tmp";
         var backupDir = extractDir + ".old";
 
-        try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch (Exception ex) { Logs.ErrorLogManager(ex); }
-        try { if (Directory.Exists(backupDir)) Directory.Delete(backupDir, true); } catch (Exception ex) { Logs.ErrorLogManager(ex); }
+        DeleteLeftoverDirectory(tempDir);
+        DeleteLeftoverDirectory(backupDir);
 
         Directory.CreateDirectory(tempDir);
         try
@@ -477,17 +477,38 @@ public partial class LibraryViewModel : ObservableObject
         }
         catch
         {
-            try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { }
+            DeleteLeftoverDirectory(tempDir);
             throw;
         }
     });
+
+    /// <summary>
+    /// Best-effort removal of a temporary or backup tree. It goes through <see cref="DirectoryRemover"/>
+    /// rather than <c>Directory.Delete</c> because these trees are game folders: a single read-only
+    /// directory inside one makes the recursive delete fail, which would leave a full copy of the
+    /// previous version on disk after every update, forever.
+    /// </summary>
+    private static void DeleteLeftoverDirectory(string path)
+    {
+        try
+        {
+            if (!Directory.Exists(path)) return;
+
+            var result = DirectoryRemover.Delete(path);
+            if (!result.Deleted) Logs.ErrorLogManager($"Could not remove leftover directory '{path}' after {result.Attempts} attempt(s). Blocked at: {result.BlockingPath}.");
+        }
+        catch (Exception ex)
+        {
+            Logs.ErrorLogManager(ex);
+        }
+    }
 
     internal static void AtomicSwapDirectories(string sourceDir, string backupDir, string targetDir)
     {
         var hadExisting = Directory.Exists(targetDir);
         if (hadExisting)
         {
-            try { if (Directory.Exists(backupDir)) Directory.Delete(backupDir, true); } catch (Exception ex) { Logs.ErrorLogManager(ex); }
+            DeleteLeftoverDirectory(backupDir);
             Directory.Move(targetDir, backupDir);
         }
 
@@ -504,10 +525,7 @@ public partial class LibraryViewModel : ObservableObject
             throw;
         }
 
-        if (hadExisting)
-        {
-            try { Directory.Delete(backupDir, true); } catch (Exception ex) { Logs.ErrorLogManager(ex); }
-        }
+        if (hadExisting) DeleteLeftoverDirectory(backupDir);
     }
 
     private void HandleDownloadCancelled(GameInfo game, DownloadSession session)
