@@ -414,4 +414,47 @@ public class GamesViewModelTests
 
         condition().ShouldBeTrue("Timed out waiting for the play session to close.");
     }
+
+    // -------------------- Running-game detection --------------------
+
+    /// <summary>
+    /// Builds an installed game backed by a real folder on disk, optionally with the read-only
+    /// subdirectory that destroyed the reported installation.
+    /// </summary>
+    private async Task<(GamesViewModel Vm, string GameDir)> CreateSutWithInstalledGameAsync(TempDirectoryFixture temp, bool readOnlyDirectory = false)
+    {
+        var gameDir = temp.Combine("Demo");
+        Directory.CreateDirectory(Path.Combine(gameDir, "Data"));
+        File.WriteAllText(Path.Combine(gameDir, "Game.exe"), "binary");
+        File.WriteAllText(Path.Combine(gameDir, "Data", "save.dat"), "data");
+
+        if (readOnlyDirectory)
+        {
+            var blocked = Path.Combine(gameDir, "Animations", "Beat_Up_hit_2");
+            Directory.CreateDirectory(blocked);
+            File.WriteAllText(Path.Combine(blocked, "frame.png"), "pixels");
+            File.SetAttributes(blocked, File.GetAttributes(blocked) | FileAttributes.ReadOnly);
+        }
+
+        _contentService.GetGameDirectory("Demo").Returns(gameDir);
+        _contentService.GetLocalGamesAsync().Returns([TestData.LocalGame(name: "Demo", version: "1.0.0", id: Guid.NewGuid())]);
+
+        return (await CreateSutAsync(), gameDir);
+    }
+
+    [Fact]
+    public async Task GetRunningSignal_WhenTheExecutableIsHeldOpen_ReportsTheWeakerSignal()
+    {
+        // Arrange — the game may have been started outside this launcher session, so there is no
+        // tracked process and the lock on the executable is the only evidence left. It is reported
+        // apart from TrackedProcess because Explorer and antivirus software hold it too.
+        using var temp = new TempDirectoryFixture("uninstall-locked-exe");
+        var (vm, gameDir) = await CreateSutWithInstalledGameAsync(temp);
+        vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.NotRunning);
+
+        using var handle = new FileStream(Path.Combine(gameDir, "Game.exe"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        // Act & Assert
+        vm.GetRunningSignal("Demo").ShouldBe(GameRunningSignal.ExecutableLocked);
+    }
 }

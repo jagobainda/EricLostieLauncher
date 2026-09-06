@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LostieLauncher.Models;
 using LostieLauncher.Services;
 using LostieLauncher.Views.Dialogs;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +16,16 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     private readonly IContentService _contentService;
     private readonly LibraryViewModel _libraryViewModel;
     private readonly GlobalViewModel _globalViewModel;
+
+    /// <summary>
+    /// Processes launched from the launcher, by game name. Uninstalling a game whose process still
+    /// holds a file open makes the recursive delete fail part-way through, so the uninstall has to be
+    /// able to tell whether the game is still up.
+    /// </summary>
+    private readonly ConcurrentDictionary<string, Process> _runningGames = new(StringComparer.OrdinalIgnoreCase);
+
     private const string HelpFolderName = "ayuda";
+    private const string GameExecutableName = "Game.exe";
     private bool _disposed;
 
     public event Action? NavigateToLibraryRequested;
@@ -190,7 +200,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     private void Play(string gameName)
     {
         Logs.DebugLogManager($"Launching game: {gameName}.");
-        var exePath = Path.Combine(_contentService.GetGameDirectory(gameName), "Game.exe");
+        var exePath = Path.Combine(_contentService.GetGameDirectory(gameName), GameExecutableName);
         var installedGame = InstalledGames.FirstOrDefault(g => string.Equals(g.Nombre, gameName, StringComparison.OrdinalIgnoreCase));
         var gameGuid = installedGame?.Id ?? Guid.Empty;
 
@@ -225,6 +235,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         var exitHandler = AsyncEventHandler.Wrap((_, _) => RunOnce());
 
         _globalViewModel.BeginPlaySession();
+        _runningGames[gameName] = process;
 
         try
         {
@@ -237,8 +248,59 @@ public partial class GamesViewModel : ObservableObject, IDisposable
         catch (Exception)
         {
             process.Exited -= exitHandler;
-            if (Interlocked.Exchange(ref handled, 1) == 0) _globalViewModel.EndPlaySession();
+            if (Interlocked.Exchange(ref handled, 1) == 0)
+            {
+                UntrackRunningGame(gameName, process);
+                _globalViewModel.EndPlaySession();
+            }
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Drops the tracked process only when it is still the one registered for that game, so a second
+    /// launch of the same game is not untracked by the first one's exit.
+    /// </summary>
+    private void UntrackRunningGame(string gameName, Process process) =>
+        ((ICollection<KeyValuePair<string, Process>>)_runningGames).Remove(new KeyValuePair<string, Process>(gameName, process));
+
+    /// <summary>
+    /// Whether the game is up, and on what evidence: a live process the launcher itself started, or
+    /// merely a hold on its executable. See <see cref="GameRunningSignal"/> for why the two are not
+    /// collapsed into a bool.
+    /// </summary>
+    internal GameRunningSignal GetRunningSignal(string gameName)
+    {
+        if (_runningGames.TryGetValue(gameName, out var process))
+        {
+            try
+            {
+                if (!process.HasExited) return GameRunningSignal.TrackedProcess;
+            }
+            catch (Exception ex)
+            {
+                // Expected race, not a failure: the exit handler disposed the process between the
+                // lookup and the check. Fall through to the executable probe rather than assuming
+                // either answer.
+                Logs.DebugLogManager($"Tracked process for '{gameName}' was already disposed ({ex.GetType().Name}); falling back to the executable probe.");
+            }
+        }
+
+        return FileLockProbe.IsLockedByAnotherProcess(SafeGetGameExecutablePath(gameName))
+            ? GameRunningSignal.ExecutableLocked
+            : GameRunningSignal.NotRunning;
+    }
+
+    private string? SafeGetGameExecutablePath(string gameName)
+    {
+        try
+        {
+            return Path.Combine(_contentService.GetGameDirectory(gameName), GameExecutableName);
+        }
+        catch (Exception ex)
+        {
+            Logs.ErrorLogManager(ex);
+            return null;
         }
     }
 
@@ -256,6 +318,7 @@ public partial class GamesViewModel : ObservableObject, IDisposable
             }
             finally
             {
+                UntrackRunningGame(gameName, process);
                 _globalViewModel.EndPlaySession();
             }
         }
@@ -365,7 +428,29 @@ public partial class GamesViewModel : ObservableObject, IDisposable
     {
         var strings = SettingsViewModel.Instance.Strings;
 
-        var confirm = CustomMessageBox.Show(strings.UninstallConfirmTitle, string.Format(strings.UninstallConfirmMessage, gameName), CustomMessageBoxButton.YesNo, CustomMessageBoxIcon.Information);
+        void ShowGameRunning() => CustomMessageBox.Show(strings.UninstallGameRunningTitle, string.Format(strings.UninstallGameRunningMessage, gameName), CustomMessageBoxButton.OK, CustomMessageBoxIcon.Error);
+
+        // Checked before the confirmation as well as inside the core: there is no point asking the
+        // user to confirm an uninstall that is going to be refused.
+        var signal = GetRunningSignal(gameName);
+
+        if (signal == GameRunningSignal.TrackedProcess)
+        {
+            Logs.InfoLogManager($"Uninstall refused, the launcher is still tracking a live process for: {gameName}.");
+            ShowGameRunning();
+            return;
+        }
+
+        // A held executable is a hint, not proof, so it turns the confirmation into a warning rather
+        // than blocking: the holder is as likely to be Explorer or an antivirus as the game itself.
+        var executableLocked = signal == GameRunningSignal.ExecutableLocked;
+        if (executableLocked) Logs.InfoLogManager($"The executable of '{gameName}' is held open by another process; warning the user instead of refusing the uninstall.");
+
+        var confirm = CustomMessageBox.Show(
+            executableLocked ? strings.UninstallGameRunningTitle : strings.UninstallConfirmTitle,
+            string.Format(executableLocked ? strings.UninstallMaybeRunningMessage : strings.UninstallConfirmMessage, gameName),
+            CustomMessageBoxButton.YesNo,
+            executableLocked ? CustomMessageBoxIcon.Error : CustomMessageBoxIcon.Information);
 
         if (confirm != true)
         {
